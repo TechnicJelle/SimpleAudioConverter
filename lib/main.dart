@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:ffmpeg_kit_flutter_new_audio/ffmpeg_kit.dart";
 import "package:ffmpeg_kit_flutter_new_audio/ffmpeg_kit_config.dart";
 import "package:ffmpeg_kit_flutter_new_audio/ffmpeg_session.dart";
@@ -60,6 +62,47 @@ class _MyHomePageState extends State<MyHomePage> {
   double? convertProgress;
   bool done = false;
 
+  Future<void> openFile(String uri) async {
+    setState(() => loading = true);
+
+    final MediaInformationSession? session = await getMediaInfo(uri);
+    if (session == null) {
+      //TODO: Show error in a proper way
+      setState(() => loading = false);
+      return;
+    }
+    final MediaInformation? information = session.getMediaInformation();
+
+    if (information == null) {
+      final String state = FFmpegKitConfig.sessionStateToString(
+        await session.getState(),
+      );
+      print(state);
+      final ReturnCode? returnCode = await session.getReturnCode();
+      print(returnCode);
+      final String? failStackTrace = await session.getFailStackTrace();
+      print(failStackTrace);
+      final int duration = await session.getDuration();
+      print(duration);
+      final String? output = await session.getOutput();
+      print(output);
+      //TODO: Show error in a proper way
+      setState(() => loading = false);
+      return;
+    }
+
+    setState(() {
+      loading = false;
+      inputFileInfo = PickedFileInfo(
+        uri: uri,
+        mediaInformation: information,
+      );
+      targetUri = null;
+      convertProgress = null;
+      done = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final thisInputFileInfo = inputFileInfo;
@@ -97,45 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   final String? uri = await pickFileRead();
                   if (uri == null) return; // User canceled the picker
-
-                  setState(() => loading = true);
-
-                  final MediaInformationSession? session = await getMediaInfo(uri);
-                  if (session == null) {
-                    //TODO: Show error in a proper way
-                    setState(() => loading = false);
-                    return;
-                  }
-                  final MediaInformation? information = session.getMediaInformation();
-
-                  if (information == null) {
-                    final String state = FFmpegKitConfig.sessionStateToString(
-                      await session.getState(),
-                    );
-                    print(state);
-                    final ReturnCode? returnCode = await session.getReturnCode();
-                    print(returnCode);
-                    final String? failStackTrace = await session.getFailStackTrace();
-                    print(failStackTrace);
-                    final int duration = await session.getDuration();
-                    print(duration);
-                    final String? output = await session.getOutput();
-                    print(output);
-                    //TODO: Show error in a proper way
-                    setState(() => loading = false);
-                    return;
-                  }
-
-                  setState(() {
-                    loading = false;
-                    inputFileInfo = PickedFileInfo(
-                      uri: uri,
-                      mediaInformation: information,
-                    );
-                    targetUri = null;
-                    convertProgress = null;
-                    done = false;
-                  });
+                  unawaited(openFile(uri));
                 },
                 child: const Text("Pick File"),
               ),
