@@ -12,6 +12,7 @@ import "package:ffmpeg_kit_flutter_new_audio/statistics.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path/path.dart" as p;
+import "package:share_handler/share_handler.dart";
 
 import "media_information_view.dart";
 import "tech_app.dart";
@@ -44,15 +45,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 @immutable
-class PickedFileInfo {
+class Path {
   final String uri;
+  final bool needsSafing;
+
+  const Path({
+    required this.uri,
+    required this.needsSafing,
+  });
+
+  Future<String?> getUrl() async {
+    if (needsSafing) {
+      return FFmpegKitConfig.getSafParameterForRead(uri);
+    }
+    return uri;
+  }
+
+  @override
+  String toString() {
+    return "Path{\n\turi: $uri\n\tneedsSafing: $needsSafing\n}";
+  }
+}
+
+@immutable
+class PickedFileInfo {
+  final Path path;
   final String filename;
   final MediaInformation mediaInformation;
 
   PickedFileInfo({
-    required this.uri,
+    required this.path,
     required this.mediaInformation,
-  }) : filename = p.basename(Uri.decodeFull(p.basename(uri)));
+  }) : filename = p.basename(Uri.decodeFull(p.basename(path.uri)));
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -62,10 +86,33 @@ class _MyHomePageState extends State<MyHomePage> {
   double? convertProgress;
   bool done = false;
 
-  Future<void> openFile(String uri) async {
+  @override
+  void initState() {
+    super.initState();
+    unawaited(initShareReceiving());
+  }
+
+  // Platform messages are asynchronous, so we initialize in an async method.
+  Future<void> initShareReceiving() async {
+    final handler = ShareHandlerPlatform.instance;
+    final SharedMedia? media = await handler.getInitialSharedMedia();
+    if (media != null) openShared(media);
+
+    handler.sharedMediaStream.listen((SharedMedia media) {
+      if (!mounted) return;
+      openShared(media);
+    });
+    if (!mounted) return;
+  }
+
+  void openShared(SharedMedia media) {
+    unawaited(openFile(Path(uri: media.attachments!.first!.path, needsSafing: false)));
+  }
+
+  Future<void> openFile(Path path, {bool safIfy = false}) async {
     setState(() => loading = true);
 
-    final MediaInformationSession? session = await getMediaInfo(uri);
+    final MediaInformationSession? session = await getMediaInfo(path);
     if (session == null) {
       //TODO: Show error in a proper way
       setState(() => loading = false);
@@ -94,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       loading = false;
       inputFileInfo = PickedFileInfo(
-        uri: uri,
+        path: path,
         mediaInformation: information,
       );
       targetUri = null;
@@ -140,7 +187,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: () async {
                   final String? uri = await pickFileRead();
                   if (uri == null) return; // User canceled the picker
-                  unawaited(openFile(uri));
+                  unawaited(openFile(Path(uri: uri, needsSafing: true)));
                 },
                 child: const Text("Pick File"),
               ),
@@ -180,11 +227,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (thisConvertProgress == null && !done)
                     ElevatedButton(
                       onPressed: () async {
-                        final String? readSafUrl =
-                            await FFmpegKitConfig.getSafParameterForRead(
-                              thisInputFileInfo.uri,
-                            );
-                        if (readSafUrl == null) throw Exception("readSafUrl was null!?");
+                        final String? readUrl = await thisInputFileInfo.path.getUrl();
+                        if (readUrl == null) throw Exception("readUrl was null!?");
 
                         final String? writeSafUrl =
                             await FFmpegKitConfig.getSafParameterForWrite(thisTargetUri);
@@ -202,7 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           done = false;
                         });
                         await FFmpegKit.executeAsync(
-                          "-i $readSafUrl" //input
+                          '-i "$readUrl"' //input (in double quotes to handle spaces)
                           " -c:a libopus" //codec for audio streams: libopus
                           " $writeSafUrl", //output
                           (FFmpegSession session) => setState(() {
@@ -261,21 +305,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   static Future<MediaInformationSession?> getMediaInfo(
-    String uri, [
+    Path path, [
     int? waitTimeout,
   ]) async {
-    final String? safUrl = await FFmpegKitConfig.getSafParameterForRead(uri);
-    if (safUrl == null) {
-      return null;
-    }
-    final commandArguments = [
+    final String? url = await path.getUrl();
+    if (url == null) return null;
+    final List<String> commandArguments = [
       "-hide_banner",
       ...["-v", "error"],
       ...["-print_format", "json"],
       "-show_format",
       "-show_streams",
       "-i",
-      safUrl,
+      url,
     ];
     return FFprobeKit.getMediaInformationFromCommandArguments(
       commandArguments,
