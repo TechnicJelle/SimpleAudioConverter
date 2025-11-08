@@ -197,7 +197,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           done = false;
                         });
                         await FFmpegKit.executeAsync(
-                          "-i $readSafUrl $writeSafUrl",
+                          "-i $readSafUrl" //input
+                          " -c:a libopus" //codec for audio streams: libopus
+                          " $writeSafUrl", //output
                           (FFmpegSession session) => setState(() {
                             convertProgress = null;
                             done = true;
