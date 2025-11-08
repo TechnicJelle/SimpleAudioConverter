@@ -159,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 if (thisTargetUri != null) ...[
                   Row(
                     children: [
-                      Flexible(child: Text(thisTargetUri)),
+                      Flexible(child: Text(Uri.decodeFull(thisTargetUri))),
                       if (thisConvertProgress == null && !done)
                         IconButton(
                           onPressed: () => setState(() {
