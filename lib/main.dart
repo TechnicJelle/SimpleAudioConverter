@@ -115,6 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
   PickedFileInfo? inputFileInfo;
   final TargetFileType targetFileType = TargetFileType();
   double? convertProgress;
+  FFmpegSession? ffmpegSession;
   bool done = false;
 
   @override
@@ -177,6 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
       targetFileType.reset();
       convertProgress = null;
+      ffmpegSession = null;
       done = false;
     });
   }
@@ -186,6 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final thisInputFileInfo = inputFileInfo;
     final thisTargetFileType = targetFileType;
     final thisConvertProgress = convertProgress;
+    final thisFfmpegSession = ffmpegSession;
 
     return Scaffold(
       appBar: AppBar(
@@ -203,6 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 inputFileInfo = null;
                 targetFileType.reset();
                 convertProgress = null;
+                ffmpegSession = null;
                 done = false;
               }),
               icon: const Icon(Icons.clear),
@@ -271,16 +275,29 @@ class _MyHomePageState extends State<MyHomePage> {
 
                       setState(() {
                         convertProgress = 0.0;
+                        ffmpegSession = null;
                         done = false;
                       });
-                      await FFmpegKit.executeAsync(
+                      final session = await FFmpegKit.executeAsync(
                         '-i "$readUrl"' //input (in double quotes to handle spaces)
                         " ${thisTargetFileType.getAdditionalArguments()} "
                         "$writeSafUrl", //output
-                        (FFmpegSession session) => setState(() {
-                          convertProgress = null;
-                          done = true;
-                        }),
+                        (FFmpegSession session) async {
+                          final ReturnCode? returnCode = await session.getReturnCode();
+                          if (returnCode?.isValueCancel() ?? false) {
+                            setState(() {
+                              convertProgress = null;
+                              ffmpegSession = null;
+                              done = false;
+                            });
+                          } else if (returnCode?.isValueSuccess() ?? false) {
+                            setState(() {
+                              convertProgress = null;
+                              ffmpegSession = null;
+                              done = true;
+                            });
+                          }
+                        },
                         (Log log) {
                           print(log.getMessage());
                         },
@@ -290,6 +307,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           });
                         },
                       );
+                      setState(() {
+                        ffmpegSession = session;
+                      });
                     },
                     child: const Text("Pick Destination and Convert"),
                   ),
@@ -306,6 +326,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ],
+                if (thisFfmpegSession != null)
+                  ElevatedButton(
+                    onPressed: thisFfmpegSession.cancel,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent,
+                    ),
+                    child: const Text("Cancel"),
+                  ),
                 if (done) ...[
                   Text(
                     "Done!",
