@@ -146,7 +146,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final MediaInformationSession? session = await getMediaInfo(path);
     if (session == null) {
-      //TODO: Show error in a proper way
+      if (mounted) {
+        showErrorDialog(
+          context: context,
+          title: "Error getting media information",
+          error: "Could not getSafParameterForRead",
+        );
+      }
+
       setState(() => loading = false);
       return;
     }
@@ -156,16 +163,22 @@ class _MyHomePageState extends State<MyHomePage> {
       final String state = FFmpegKitConfig.sessionStateToString(
         await session.getState(),
       );
-      print(state);
       final ReturnCode? returnCode = await session.getReturnCode();
-      print(returnCode);
       final String? failStackTrace = await session.getFailStackTrace();
-      print(failStackTrace);
       final int duration = await session.getDuration();
-      print(duration);
       final String? output = await session.getOutput();
-      print(output);
-      //TODO: Show error in a proper way
+      if (mounted) {
+        showErrorDialog(
+          context: context,
+          title: "Error getting media information",
+          error:
+              "State: $state\n"
+              "Return Code: $returnCode (${returnCode?.getValue()})\n"
+              "Duration: $duration\n"
+              "Output: $output",
+          stacktrace: failStackTrace,
+        );
+      }
       setState(() => loading = false);
       return;
     }
@@ -220,7 +233,20 @@ class _MyHomePageState extends State<MyHomePage> {
           ? Center(
               child: ElevatedButton(
                 onPressed: () async {
-                  final String? uri = await pickFileRead();
+                  final String? uri;
+                  try {
+                    uri = await pickFileRead();
+                  } catch (e, s) {
+                    if (context.mounted) {
+                      showErrorDialog(
+                        context: context,
+                        title: "Error showing file picker",
+                        error: e.toString(),
+                        stacktrace: s.toString(),
+                      );
+                    }
+                    return;
+                  }
                   if (uri == null) return; // User canceled the picker
                   unawaited(openFile(Path(uri: uri, needsSafing: true)));
                 },
@@ -253,10 +279,23 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      final targetUri = await pickFileWrite(
-                        "audio.${thisTargetFileType.extension}",
-                        thisTargetFileType.getMimeType(),
-                      );
+                      final String? targetUri;
+                      try {
+                        targetUri = await pickFileWrite(
+                          "audio.${thisTargetFileType.extension}",
+                          thisTargetFileType.getMimeType(),
+                        );
+                      } catch (e, s) {
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error showing destination picker",
+                            error: e.toString(),
+                            stacktrace: s.toString(),
+                          );
+                        }
+                        return;
+                      }
                       if (targetUri == null) return; // User canceled the picker
                       done = false;
                       final String? readUrl = await thisInputFileInfo.path.getUrl();
@@ -386,4 +425,31 @@ class _MyHomePageState extends State<MyHomePage> {
       waitTimeout,
     );
   }
+}
+
+void showErrorDialog({
+  required BuildContext context,
+  required String title,
+  required String error,
+  String? stacktrace,
+}) {
+  unawaited(
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Column(
+          children: [
+            Text(error),
+            const SizedBox(height: 8),
+            if (stacktrace != null)
+              Text(
+                stacktrace,
+                style: const TextStyle(color: Colors.grey),
+              ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
