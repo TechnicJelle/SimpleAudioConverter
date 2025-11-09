@@ -79,10 +79,41 @@ class PickedFileInfo {
   }) : filename = p.basename(Uri.decodeFull(p.basename(path.uri)));
 }
 
+class TargetFileType {
+  static const String _defaultExtension = "opus";
+  String extension;
+
+  TargetFileType({this.extension = _defaultExtension});
+
+  void reset() {
+    extension = _defaultExtension;
+  }
+
+  String? getMimeType() {
+    switch (extension) {
+      case "opus":
+        return "audio/opus";
+      case "mp3":
+        return "audio/mpeg";
+    }
+
+    return null;
+  }
+
+  String getAdditionalArguments() {
+    switch (extension) {
+      case "opus":
+        return "-c:a libopus"; //codec for audio streams: libopus
+    }
+
+    return "";
+  }
+}
+
 class _MyHomePageState extends State<MyHomePage> {
   bool loading = false;
   PickedFileInfo? inputFileInfo;
-  String? targetUri;
+  final TargetFileType targetFileType = TargetFileType();
   double? convertProgress;
   bool done = false;
 
@@ -144,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
         path: path,
         mediaInformation: information,
       );
-      targetUri = null;
+      targetFileType.reset();
       convertProgress = null;
       done = false;
     });
@@ -153,7 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final thisInputFileInfo = inputFileInfo;
-    final thisTargetUri = targetUri;
+    final thisTargetFileType = targetFileType;
     final thisConvertProgress = convertProgress;
 
     return Scaffold(
@@ -170,7 +201,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => setState(() {
                 loading = false;
                 inputFileInfo = null;
-                targetUri = null;
+                targetFileType.reset();
                 convertProgress = null;
                 done = false;
               }),
@@ -195,78 +226,78 @@ class _MyHomePageState extends State<MyHomePage> {
           : ListView(
               children: [
                 MediaInformationView(info: thisInputFileInfo.mediaInformation),
-                Text("Destination:", style: TextTheme.of(context).titleLarge),
-                if (thisTargetUri == null)
-                  ElevatedButton(
-                    onPressed: () async {
-                      final uri = await pickFileWrite("audio.opus", "audio/opus");
-                      if (uri == null) return; // User canceled the picker
+                if (thisConvertProgress == null && !done) ...[
+                  Text("Target:", style: TextTheme.of(context).titleLarge),
+                  DropdownButton<String>(
+                    value: thisTargetFileType.extension,
+                    items: const [
+                      DropdownMenuItem(
+                        value: "opus",
+                        child: Text("Opus"),
+                      ),
+                      DropdownMenuItem(
+                        value: "mp3",
+                        child: Text("MP3"),
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      if (value == null) return;
                       setState(() {
-                        targetUri = uri;
-                        done = false;
+                        targetFileType.extension = value;
                       });
                     },
-                    child: const Text("Pick destination"),
                   ),
-                if (thisTargetUri != null) ...[
-                  Row(
-                    children: [
-                      Flexible(child: Text(Uri.decodeFull(thisTargetUri))),
-                      if (thisConvertProgress == null && !done)
-                        IconButton(
-                          onPressed: () => setState(() {
-                            targetUri = null;
-                            done = false;
-                          }),
-                          icon: const Icon(Icons.clear),
-                          tooltip: "Clear target destination",
-                        ),
-                    ],
+                  ElevatedButton(
+                    onPressed: () async {
+                      final targetUri = await pickFileWrite(
+                        "audio.${thisTargetFileType.extension}",
+                        thisTargetFileType.getMimeType(),
+                      );
+                      if (targetUri == null) return; // User canceled the picker
+                      done = false;
+                      final String? readUrl = await thisInputFileInfo.path.getUrl();
+                      if (readUrl == null) throw Exception("readUrl was null!?");
+
+                      final String? writeSafUrl =
+                          await FFmpegKitConfig.getSafParameterForWrite(targetUri);
+                      if (writeSafUrl == null) {
+                        throw Exception("writeSafUrl was null!?");
+                      }
+
+                      final double? duration = double.tryParse(
+                        thisInputFileInfo.mediaInformation.getDuration() ?? "",
+                      );
+                      if (duration == null) throw Exception("duration was null!?");
+
+                      setState(() {
+                        convertProgress = 0.0;
+                        done = false;
+                      });
+                      await FFmpegKit.executeAsync(
+                        '-i "$readUrl"' //input (in double quotes to handle spaces)
+                        " ${thisTargetFileType.getAdditionalArguments()} "
+                        "$writeSafUrl", //output
+                        (FFmpegSession session) => setState(() {
+                          convertProgress = null;
+                          done = true;
+                        }),
+                        (Log log) {
+                          print(log.getMessage());
+                        },
+                        (Statistics statistics) {
+                          setState(() {
+                            convertProgress = statistics.getTime() / (duration * 1000);
+                          });
+                        },
+                      );
+                    },
+                    child: const Text("Pick Destination and Convert"),
                   ),
-                  Text("Convert:", style: TextTheme.of(context).titleLarge),
-                  if (thisConvertProgress == null && !done)
-                    ElevatedButton(
-                      onPressed: () async {
-                        final String? readUrl = await thisInputFileInfo.path.getUrl();
-                        if (readUrl == null) throw Exception("readUrl was null!?");
-
-                        final String? writeSafUrl =
-                            await FFmpegKitConfig.getSafParameterForWrite(thisTargetUri);
-                        if (writeSafUrl == null) {
-                          throw Exception("writeSafUrl was null!?");
-                        }
-
-                        final double? duration = double.tryParse(
-                          thisInputFileInfo.mediaInformation.getDuration() ?? "",
-                        );
-                        if (duration == null) throw Exception("duration was null!?");
-
-                        setState(() {
-                          convertProgress = 0.0;
-                          done = false;
-                        });
-                        await FFmpegKit.executeAsync(
-                          '-i "$readUrl"' //input (in double quotes to handle spaces)
-                          " -c:a libopus" //codec for audio streams: libopus
-                          " $writeSafUrl", //output
-                          (FFmpegSession session) => setState(() {
-                            convertProgress = null;
-                            done = true;
-                          }),
-                          (Log log) {
-                            print(log.getMessage());
-                          },
-                          (Statistics statistics) {
-                            setState(() {
-                              convertProgress = statistics.getTime() / (duration * 1000);
-                            });
-                          },
-                        );
-                      },
-                      child: const Text("Convert to Opus"),
-                    ),
                 ],
-                if (thisConvertProgress != null)
+                if (thisConvertProgress != null || done)
+                  Text("Progress:", style: TextTheme.of(context).titleLarge),
+                if (thisConvertProgress != null) ...[
+                  Text("Converting to ${thisTargetFileType.extension}..."),
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: LinearProgressIndicator(
@@ -274,13 +305,16 @@ class _MyHomePageState extends State<MyHomePage> {
                       minHeight: 8,
                     ),
                   ),
-                if (done)
+                ],
+                if (done) ...[
                   Text(
                     "Done!",
                     style: TextTheme.of(
                       context,
                     ).titleMedium?.copyWith(color: Colors.green),
                   ),
+                  Text("Converted to ${thisTargetFileType.extension}!"),
+                ],
               ],
             ),
     );
@@ -295,7 +329,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  static Future<String?> pickFileWrite(String title, String type) async {
+  static Future<String?> pickFileWrite(String title, String? type) async {
     try {
       return await FFmpegKitConfig.selectDocumentForWrite(title, type);
     } on PlatformException catch (e) {
