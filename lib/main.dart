@@ -138,7 +138,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void openShared(SharedMedia media) {
-    unawaited(openFile(Path(uri: media.attachments!.first!.path, needsSafing: false)));
+    try {
+      unawaited(openFile(Path(uri: media.attachments!.first!.path, needsSafing: false)));
+    } catch (e, s) {
+      if (context.mounted) {
+        showErrorDialog(
+          context: context,
+          title: "Error opening file",
+          error: e.toString(),
+          stacktrace: s.toString(),
+        );
+      }
+      return;
+    }
   }
 
   Future<void> openFile(Path path, {bool safIfy = false}) async {
@@ -248,7 +260,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     return;
                   }
                   if (uri == null) return; // User canceled the picker
-                  unawaited(openFile(Path(uri: uri, needsSafing: true)));
+                  try {
+                    unawaited(openFile(Path(uri: uri, needsSafing: true)));
+                  } catch (e, s) {
+                    if (context.mounted) {
+                      showErrorDialog(
+                        context: context,
+                        title: "Error opening file",
+                        error: e.toString(),
+                        stacktrace: s.toString(),
+                      );
+                    }
+                    return;
+                  }
                 },
                 child: const Text("Pick File"),
               ),
