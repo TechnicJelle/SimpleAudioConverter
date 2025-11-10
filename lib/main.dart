@@ -460,6 +460,16 @@ class _MyHomePageState extends State<MyHomePage> {
             ffmpegSession = null;
             done = true;
           });
+        } else if (returnCode?.isValueError() ?? false) {
+          final String? output = await session.getOutput();
+          if (mounted) {
+            showErrorDialog(
+              context: context,
+              title: "Error while converting",
+              error: "Logs:",
+              stacktrace: output,
+            );
+          }
         }
         final String? sizeStr = intToSize(
           (await session.getLastReceivedStatistics())?.getSize(),
