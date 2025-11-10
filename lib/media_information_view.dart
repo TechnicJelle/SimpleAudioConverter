@@ -11,11 +11,6 @@ class MediaInformationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int? sizeNum = int.tryParse(info.getSize() ?? "");
-    final String? size = sizeNum == null
-        ? null
-        : "${(sizeNum / 1e+6).toStringAsFixed(2)} MB";
-
     final int? bitrateNum = int.tryParse(info.getBitrate() ?? "");
     final String? bitrate = bitrateNum == null
         ? null
@@ -31,7 +26,7 @@ class MediaInformationView extends StatelessWidget {
         Table(
           children: [
             TableRow(children: [const Text("Format:"), nText(info.getFormat())]),
-            TableRow(children: [const Text("Size:"), nText(size)]),
+            TableRow(children: [const Text("Size:"), nText(strToSize(info.getSize()))]),
             TableRow(children: [const Text("Duration:"), nText(duration)]),
             TableRow(children: [const Text("Bitrate:"), nText(bitrate)]),
           ],

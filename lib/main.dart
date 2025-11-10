@@ -19,6 +19,7 @@ import "package:share_plus/share_plus.dart";
 
 import "media_information_view.dart";
 import "tech_app.dart";
+import "utils.dart";
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -121,6 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
   FFmpegSession? ffmpegSession;
   bool done = false;
   ShareParams? shared;
+  String? finalSize;
 
   @override
   void initState() {
@@ -210,6 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ffmpegSession = null;
       done = false;
       shared = null;
+      finalSize = null;
     });
   }
 
@@ -220,6 +223,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final thisConvertProgress = convertProgress;
     final thisFfmpegSession = ffmpegSession;
     final thisShared = shared;
+    final thisFinalSize = finalSize;
 
     return Scaffold(
       appBar: AppBar(
@@ -407,6 +411,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ).titleMedium?.copyWith(color: Colors.green),
                   ),
                   Text("Converted to ${thisTargetFileType.extension}!"),
+                  if (thisFinalSize != null) Text("Final size: $thisFinalSize"),
                 ],
                 if (thisShared != null)
                   ElevatedButton(
@@ -456,6 +461,10 @@ class _MyHomePageState extends State<MyHomePage> {
             done = true;
           });
         }
+        final String? sizeStr = intToSize(
+          (await session.getLastReceivedStatistics())?.getSize(),
+        );
+        setState(() => finalSize = sizeStr);
         completer.complete(returnCode);
       },
       (Log log) {
