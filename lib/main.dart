@@ -1,4 +1,5 @@
 import "dart:async";
+import "dart:io";
 
 import "package:ffmpeg_kit_flutter_new_audio/ffmpeg_kit.dart";
 import "package:ffmpeg_kit_flutter_new_audio/ffmpeg_kit_config.dart";
@@ -12,7 +13,9 @@ import "package:ffmpeg_kit_flutter_new_audio/statistics.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path/path.dart" as p;
+import "package:path_provider/path_provider.dart";
 import "package:share_handler/share_handler.dart";
+import "package:share_plus/share_plus.dart";
 
 import "media_information_view.dart";
 import "tech_app.dart";
@@ -117,6 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
   double? convertProgress;
   FFmpegSession? ffmpegSession;
   bool done = false;
+  ShareParams? shared;
 
   @override
   void initState() {
@@ -205,6 +209,7 @@ class _MyHomePageState extends State<MyHomePage> {
       convertProgress = null;
       ffmpegSession = null;
       done = false;
+      shared = null;
     });
   }
 
@@ -214,6 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final thisTargetFileType = targetFileType;
     final thisConvertProgress = convertProgress;
     final thisFfmpegSession = ffmpegSession;
+    final thisShared = shared;
 
     return Scaffold(
       appBar: AppBar(
@@ -301,6 +307,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       });
                     },
                   ),
+                  Text("Convert:", style: TextTheme.of(context).titleLarge),
                   ElevatedButton(
                     onPressed: () async {
                       final String? targetUri;
@@ -331,14 +338,45 @@ class _MyHomePageState extends State<MyHomePage> {
                         throw Exception("writeSafUrl was null!?");
                       }
 
-                      await doTheConvert(
+                      unawaited(
+                        doTheConvert(
+                          inputFileInfo: thisInputFileInfo,
+                          readUrl: readUrl,
+                          targetFileType: thisTargetFileType,
+                          writeUrl: writeSafUrl,
+                        ),
+                      );
+                    },
+                    child: const Text("Pick Destination File"),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final String? readUrl = await thisInputFileInfo.path.getUrl();
+                      if (readUrl == null) throw Exception("readUrl was null!?");
+
+                      final Directory tempDir = await getTemporaryDirectory();
+                      final String filename =
+                          "${thisInputFileInfo.filename}.${thisTargetFileType.extension}";
+                      final String targetFilePath = p.join(tempDir.path, filename);
+                      final bool success = (await doTheConvert(
                         inputFileInfo: thisInputFileInfo,
                         readUrl: readUrl,
                         targetFileType: thisTargetFileType,
-                        writeUrl: writeSafUrl,
+                        writeUrl: targetFilePath,
+                      )).isValueSuccess();
+                      if (!success) return;
+
+                      final params = ShareParams(
+                        text: "Share $filename",
+                        files: [XFile(targetFilePath)],
                       );
+
+                      await SharePlus.instance.share(params);
+                      setState(() {
+                        shared = params;
+                      });
                     },
-                    child: const Text("Pick Destination and Convert"),
+                    child: const Text("Share to App"),
                   ),
                 ],
                 if (thisConvertProgress != null || done)
@@ -370,6 +408,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   Text("Converted to ${thisTargetFileType.extension}!"),
                 ],
+                if (thisShared != null)
+                  ElevatedButton(
+                    onPressed: () => unawaited(SharePlus.instance.share(thisShared)),
+                    child: const Text("Share again"),
+                  ),
               ],
             ),
     );
@@ -396,6 +439,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final session = await FFmpegKit.executeAsync(
       '-i "$readUrl"' //input (in double quotes to handle spaces)
       " ${targetFileType.getAdditionalArguments()} "
+      " -y " //overwrite
       "$writeUrl", //output
       (FFmpegSession session) async {
         final ReturnCode? returnCode = await session.getReturnCode();
