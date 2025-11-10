@@ -331,48 +331,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         throw Exception("writeSafUrl was null!?");
                       }
 
-                      final double? duration = double.tryParse(
-                        thisInputFileInfo.mediaInformation.getDuration() ?? "",
+                      await doTheConvert(
+                        inputFileInfo: thisInputFileInfo,
+                        readUrl: readUrl,
+                        targetFileType: thisTargetFileType,
+                        writeUrl: writeSafUrl,
                       );
-                      if (duration == null) throw Exception("duration was null!?");
-
-                      setState(() {
-                        convertProgress = 0.0;
-                        ffmpegSession = null;
-                        done = false;
-                      });
-                      final session = await FFmpegKit.executeAsync(
-                        '-i "$readUrl"' //input (in double quotes to handle spaces)
-                        " ${thisTargetFileType.getAdditionalArguments()} "
-                        "$writeSafUrl", //output
-                        (FFmpegSession session) async {
-                          final ReturnCode? returnCode = await session.getReturnCode();
-                          if (returnCode?.isValueCancel() ?? false) {
-                            setState(() {
-                              convertProgress = null;
-                              ffmpegSession = null;
-                              done = false;
-                            });
-                          } else if (returnCode?.isValueSuccess() ?? false) {
-                            setState(() {
-                              convertProgress = null;
-                              ffmpegSession = null;
-                              done = true;
-                            });
-                          }
-                        },
-                        (Log log) {
-                          print(log.getMessage());
-                        },
-                        (Statistics statistics) {
-                          setState(() {
-                            convertProgress = statistics.getTime() / (duration * 1000);
-                          });
-                        },
-                      );
-                      setState(() {
-                        ffmpegSession = session;
-                      });
                     },
                     child: const Text("Pick Destination and Convert"),
                   ),
@@ -409,6 +373,61 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
     );
+  }
+
+  Future<ReturnCode> doTheConvert({
+    required PickedFileInfo inputFileInfo,
+    required String readUrl,
+    required TargetFileType targetFileType,
+    required String writeUrl,
+  }) async {
+    final double? duration = double.tryParse(
+      inputFileInfo.mediaInformation.getDuration() ?? "",
+    );
+    if (duration == null) throw Exception("duration was null!?");
+
+    setState(() {
+      convertProgress = 0.0;
+      ffmpegSession = null;
+      done = false;
+    });
+
+    final completer = Completer<ReturnCode>();
+    final session = await FFmpegKit.executeAsync(
+      '-i "$readUrl"' //input (in double quotes to handle spaces)
+      " ${targetFileType.getAdditionalArguments()} "
+      "$writeUrl", //output
+      (FFmpegSession session) async {
+        final ReturnCode? returnCode = await session.getReturnCode();
+        if (returnCode?.isValueCancel() ?? false) {
+          setState(() {
+            convertProgress = null;
+            ffmpegSession = null;
+            done = false;
+          });
+        } else if (returnCode?.isValueSuccess() ?? false) {
+          setState(() {
+            convertProgress = null;
+            ffmpegSession = null;
+            done = true;
+          });
+        }
+        completer.complete(returnCode);
+      },
+      (Log log) {
+        print(log.getMessage());
+      },
+      (Statistics statistics) {
+        setState(() {
+          convertProgress = statistics.getTime() / (duration * 1000);
+        });
+      },
+    );
+    setState(() {
+      ffmpegSession = session;
+    });
+
+    return completer.future;
   }
 
   static Future<String?> pickFileRead() async {
