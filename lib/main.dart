@@ -52,18 +52,14 @@ class MyHomePage extends StatefulWidget {
 class Path {
   final String uri;
   final bool needsSafing;
+  final String filename;
 
-  const Path({
+  Path({
     required this.uri,
     required this.needsSafing,
-  });
-
-  String getFilename() {
-    if (needsSafing) {
-      return p.basename(Uri.decodeFull(p.basename(uri)));
-    }
-    return p.basename(uri);
-  }
+  }) : filename = needsSafing
+           ? p.basename(Uri.decodeFull(p.basename(uri)))
+           : p.basename(uri);
 
   Future<String?> getUrl() async {
     if (needsSafing) {
@@ -74,20 +70,25 @@ class Path {
 
   @override
   String toString() {
-    return "Path{\n\turi: $uri\n\tneedsSafing: $needsSafing\n}";
+    return "Path{\n"
+        "\turi: $uri\n"
+        "\tneedsSafing: $needsSafing\n"
+        "\tfilename: $filename\n"
+        "}";
   }
 }
 
 @immutable
 class PickedFileInfo {
   final Path path;
-  final String filename;
   final MediaInformation mediaInformation;
 
-  PickedFileInfo({
+  const PickedFileInfo({
     required this.path,
     required this.mediaInformation,
-  }) : filename = path.getFilename();
+  });
+
+  String get filename => path.filename;
 }
 
 class TargetFileType {
