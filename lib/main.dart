@@ -193,7 +193,7 @@ class _MyHomePageState extends State<MyHomePage> {
               "State: $state\n"
               "Return Code: $returnCode (${returnCode?.getValue()})\n"
               "Duration: $duration\n"
-              "Output: $output",
+              "Output:\n$output",
           stacktrace: failStackTrace,
         );
       }
@@ -474,7 +474,8 @@ class _MyHomePageState extends State<MyHomePage> {
               context: context,
               title: "Error while converting",
               error: "Logs:",
-              stacktrace: output,
+              //for some reason, there are Carriage Returns in here sometimes..? we'll replace them with newlines...
+              stacktrace: output?.replaceAll(String.fromCharCode(13), "\n"),
             );
           }
         }
@@ -551,16 +552,22 @@ void showErrorDialog({
       context: context,
       builder: (context) => AlertDialog(
         title: Text(title),
-        content: Column(
-          children: [
-            Text(error),
-            const SizedBox(height: 8),
-            if (stacktrace != null)
-              Text(
-                stacktrace,
-                style: const TextStyle(color: Colors.grey),
-              ),
-          ],
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(error),
+              const SizedBox(height: 8),
+              if (stacktrace != null)
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SelectableText(
+                    stacktrace,
+                    style: const TextStyle(color: Colors.grey, fontFamily: "monospace"),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     ),
