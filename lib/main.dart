@@ -342,12 +342,28 @@ class _MyHomePageState extends State<MyHomePage> {
                       if (targetUri == null) return; // User canceled the picker
                       done = false;
                       final String? readUrl = await thisInputFileInfo.path.getUrl();
-                      if (readUrl == null) throw Exception("readUrl was null!?");
+                      if (readUrl == null) {
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error parsing destination file path",
+                            error: "readUrl was null",
+                          );
+                        }
+                        return;
+                      }
 
                       final String? writeSafUrl =
                           await FFmpegKitConfig.getSafParameterForWrite(targetUri);
                       if (writeSafUrl == null) {
-                        throw Exception("writeSafUrl was null!?");
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error parsing target file path",
+                            error: "writeSafUrl was null",
+                          );
+                        }
+                        return;
                       }
 
                       unawaited(
@@ -364,7 +380,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   ElevatedButton(
                     onPressed: () async {
                       final String? readUrl = await thisInputFileInfo.path.getUrl();
-                      if (readUrl == null) throw Exception("readUrl was null!?");
+                      if (readUrl == null) {
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error parsing destination file path",
+                            error: "readUrl was null",
+                          );
+                        }
+                        return;
+                      }
 
                       final Directory tempDir = await getTemporaryDirectory();
                       final String filename =
@@ -447,7 +472,16 @@ class _MyHomePageState extends State<MyHomePage> {
     final double? duration = double.tryParse(
       inputFileInfo.mediaInformation.getDuration() ?? "",
     );
-    if (duration == null) throw Exception("duration was null!?");
+    if (duration == null) {
+      if (context.mounted) {
+        showErrorDialog(
+          context: context,
+          title: "Error parsing media duration",
+          error: "duration was null",
+        );
+      }
+      return ReturnCode(1);
+    }
 
     setState(() {
       convertProgress = 0.0;
