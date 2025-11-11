@@ -452,7 +452,7 @@ class _MyHomePageState extends State<MyHomePage> {
       '-i "$readUrl"' //input (in double quotes to handle spaces)
       " ${targetFileType.getAdditionalArguments()} "
       " -y " //overwrite
-      "$writeUrl", //output
+      ' "$writeUrl"', //output
       (FFmpegSession session) async {
         final ReturnCode? returnCode = await session.getReturnCode();
         if (returnCode?.isValueCancel() ?? false) {
