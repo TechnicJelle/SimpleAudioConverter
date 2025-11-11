@@ -58,6 +58,13 @@ class Path {
     required this.needsSafing,
   });
 
+  String getFilename() {
+    if (needsSafing) {
+      return p.basename(Uri.decodeFull(p.basename(uri)));
+    }
+    return p.basename(uri);
+  }
+
   Future<String?> getUrl() async {
     if (needsSafing) {
       return FFmpegKitConfig.getSafParameterForRead(uri);
@@ -80,7 +87,7 @@ class PickedFileInfo {
   PickedFileInfo({
     required this.path,
     required this.mediaInformation,
-  }) : filename = p.basename(Uri.decodeFull(p.basename(path.uri)));
+  }) : filename = path.getFilename();
 }
 
 class TargetFileType {
