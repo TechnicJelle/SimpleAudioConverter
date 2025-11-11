@@ -397,7 +397,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
                 if (thisFfmpegSession != null)
                   ElevatedButton(
-                    onPressed: thisFfmpegSession.cancel,
+                    onPressed: () async {
+                      await thisFfmpegSession.cancel();
+                      setState(() {
+                        convertProgress = null;
+                        ffmpegSession = null;
+                        done = false;
+                      });
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orangeAccent,
                     ),
