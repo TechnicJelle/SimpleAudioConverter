@@ -516,7 +516,9 @@ class _MyHomePageState extends State<MyHomePage> {
               context: context,
               title: "Error while converting",
               error: "Logs:",
-              //for some reason, there are Carriage Returns in here sometimes..? we'll replace them with newlines...
+              //ffmpeg likes to use the same line for all the progress notifications,
+              // so it uses a Carriage Return to overwrite the current line.
+              // This is of course not supported here, so we replace it with a newline
               stacktrace: output?.replaceAll(String.fromCharCode(13), "\n"),
             );
           }
