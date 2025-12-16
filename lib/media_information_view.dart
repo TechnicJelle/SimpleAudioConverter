@@ -4,13 +4,34 @@ import "package:flutter/material.dart";
 import "stream_information_view.dart";
 import "utils.dart";
 
-class MediaInformationView extends StatelessWidget {
+class MediaInformationView extends StatefulWidget {
   final MediaInformation info;
 
   const MediaInformationView({required this.info, super.key});
 
   @override
+  State<MediaInformationView> createState() => _MediaInformationViewState();
+}
+
+class _MediaInformationViewState extends State<MediaInformationView> {
+  MediaInformation get info => widget.info;
+
+  bool open = false;
+
+  @override
   Widget build(BuildContext context) {
+    if (!open) {
+      return InkWell(
+        onTap: () => setState(() => open = true),
+        child: Row(
+          children: [
+            const Icon(Icons.keyboard_arrow_right),
+            Text("Media Information", style: TextTheme.of(context).titleLarge),
+          ],
+        ),
+      );
+    }
+
     final int? bitrateNum = int.tryParse(info.getBitrate() ?? "");
     final String? bitrate = bitrateNum == null
         ? null
@@ -22,7 +43,15 @@ class MediaInformationView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Media Information:", style: TextTheme.of(context).titleLarge),
+        InkWell(
+          onTap: () => setState(() => open = false),
+          child: Row(
+            children: [
+              const Icon(Icons.keyboard_arrow_down),
+              Text("Media Information", style: TextTheme.of(context).titleLarge),
+            ],
+          ),
+        ),
         Table(
           children: [
             TableRow(children: [const Text("Format:"), nText(info.getFormat())]),
