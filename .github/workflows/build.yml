@@ -19,6 +19,6 @@ jobs:
           flutter-version: '3.35.7'
       - run: flutter pub get
       - run: flutter build apk
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           path: build/app/outputs/flutter-apk
