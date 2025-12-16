@@ -381,6 +381,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       child: const Text("Pick Destination File"),
                     ),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        "or",
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                     ElevatedButton(
                       onPressed: () async {
                         final String? readUrl = await thisInputFileInfo.path.getUrl();
