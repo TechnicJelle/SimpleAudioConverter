@@ -1,5 +1,8 @@
 import "package:flutter/material.dart";
 
+/// Nullable Text Widget
+///
+/// Says "Unknown" in italic grey if [str] is null.
 Text nText(String? str) {
   if (str == null) {
     return const Text(
