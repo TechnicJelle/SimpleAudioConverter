@@ -131,6 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool done = false;
   ShareParams? shared;
   String? finalSize;
+  bool voiceOptimization = false;
 
   @override
   void initState() {
@@ -251,6 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 convertProgress = null;
                 ffmpegSession = null;
                 done = false;
+                voiceOptimization = false;
               }),
               icon: const Icon(Icons.clear),
               tooltip: "Clear file",
@@ -302,7 +304,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   MediaInformationView(info: thisInputFileInfo.mediaInformation),
                   const SizedBox(height: 32),
                   if (thisConvertProgress == null && !done) ...[
+                    Text("Filters", style: TextTheme.of(context).titleLarge),
+                    CheckboxMenuButton(
+                      value: voiceOptimization,
+                      onChanged: (bool? value) => setState(() {
+                        voiceOptimization = value ?? false;
+                      }),
+                      child: const Text(
+                        "Reduce background noise and optimize for voice",
+                      ),
+                    ),
+                    const SizedBox(height: 32),
                     Text("Target", style: TextTheme.of(context).titleLarge),
+                    const SizedBox(height: 8),
                     DropdownButton<String>(
                       value: thisTargetFileType.extension,
                       items: const [
@@ -527,13 +541,25 @@ class _MyHomePageState extends State<MyHomePage> {
       done = false;
     });
 
+    final File? arnndnModel;
+    if (voiceOptimization) {
+      //Source: https://github.com/richardpl/arnndn-models
+      //std.rnnn is originally bundled with Xiph RNNoise implementation (https://github.com/xiph/rnnoise/blob/master/src/rnn_data.c)
+      //Another good place for info: https://github.com/GregorR/rnnoise-models/tree/master
+      arnndnModel = await getFileFromAssets("arnndn-models/std.rnnn");
+    } else {
+      arnndnModel = null;
+    }
+
     final completer = Completer<ReturnCode>();
     final session = await FFmpegKit.executeAsync(
       '-i "$readUrl"' //input (in double quotes to handle spaces)
+      "${arnndnModel == null ? "" : " -filter:a 'arnndn=model=${arnndnModel.path}:mix=1.0' "}" //apply filters to audio streams: the arnndn denoise model
       " ${targetFileType.getAdditionalArguments()} "
       " -y " //overwrite
       ' "$writeUrl"', //output
       (FFmpegSession session) async {
+        print("command: ${session.getCommand()}");
         final ReturnCode? returnCode = await session.getReturnCode();
         if (returnCode?.isValueCancel() ?? false) {
           setState(() {

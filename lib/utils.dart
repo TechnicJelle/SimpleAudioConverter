@@ -1,4 +1,8 @@
+import "dart:io";
+
 import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:path_provider/path_provider.dart";
 
 /// Nullable Text Widget
 ///
@@ -21,4 +25,21 @@ String? strToSize(String? sizeStr) {
 
 String? intToSize(int? sizeNum) {
   return sizeNum == null ? null : "${(sizeNum / 1e+6).toStringAsFixed(2)} MB";
+}
+
+Future<File> getFileFromAssets(String path) async {
+  final Directory tempDir = await getTemporaryDirectory();
+  final String tempPath = tempDir.path;
+  final String filePath = "$tempPath/$path";
+  final File file = File(filePath);
+  if (file.existsSync()) {
+    return file;
+  } else {
+    final byteData = await rootBundle.load("assets/$path");
+    final buffer = byteData.buffer;
+    await file.create(recursive: true);
+    return file.writeAsBytes(
+      buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
+    );
+  }
 }
