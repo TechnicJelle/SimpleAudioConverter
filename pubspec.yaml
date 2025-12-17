@@ -38,6 +38,7 @@ dependencies:
 
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.4
   very_good_analysis: ^10.0.0
 
 # For information on the generic Dart part of this file, see the
@@ -82,3 +83,7 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+  image_path: "assets/icon_2048.png"
+  android: true

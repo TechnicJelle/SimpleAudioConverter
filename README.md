@@ -1,3 +1,5 @@
+<img align="left" width="100px" src="assets/icon_2048.png" alt="logo">
+
 # Simple Audio Converter
 
 A simple audio converter app for Android
