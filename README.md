@@ -2,11 +2,11 @@
 
 A simple audio converter app for Android
 
-https://github.com/user-attachments/assets/4f2edc1a-e4cc-400e-a04d-4d1235f5b97c
+https://github.com/user-attachments/assets/a857edd9-2049-43c8-8ce7-ef0cdeb1d1e6
 
 Can also receive shared files:
 
-https://github.com/user-attachments/assets/111609f9-fb75-418b-99ab-e003dda35179
+https://github.com/user-attachments/assets/f548e0b2-a5cb-4aa3-b505-cc478e6ea564
 
 THe UI has been cleaned up a bit since those videos were recorded,
 but the core functionality has remained the same, so I haven't re-recorded them (yet).
