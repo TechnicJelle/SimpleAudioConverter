@@ -308,11 +308,37 @@ class _MyHomePageState extends State<MyHomePage> {
                       items: const [
                         DropdownMenuItem(
                           value: "opus",
-                          child: Text("Opus"),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Opus"),
+                              Text(
+                                "(Best compression & quality, good compatibility)",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         DropdownMenuItem(
                           value: "mp3",
-                          child: Text("MP3"),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("MP3"),
+                              Text(
+                                "(Fine compression & quality, best compatibility)",
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                       onChanged: (String? value) {
