@@ -10,9 +10,8 @@ Can also receive shared files:
 
 https://github.com/user-attachments/assets/f548e0b2-a5cb-4aa3-b505-cc478e6ea564
 
-THe UI has been cleaned up a bit since those videos were recorded,
+The UI has been cleaned up a bit since those videos were recorded,
 but the core functionality has remained the same, so I haven't re-recorded them (yet).
 
-![example01](.github/readme_assets/example01.png)
-
-![example02](.github/readme_assets/example02.png)
+| ![example01](.github/readme_assets/example01.png) | ![example02](.github/readme_assets/example02.png) |
+|---|---|
