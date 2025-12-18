@@ -112,10 +112,11 @@ class TargetFileType {
     return null;
   }
 
-  String getAdditionalArguments() {
+  String getAdditionalArguments({required bool voiceOptimization}) {
     switch (extension) {
       case "opus":
-        return "-c:a libopus"; //codec for audio streams: libopus
+        return "-c:a libopus" //codec for audio streams: libopus
+            "${voiceOptimization ? " -application voip " : ""}"; //https://ffmpeg.org/ffmpeg-codecs.html#libopus-1
     }
 
     return "";
@@ -555,7 +556,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final session = await FFmpegKit.executeAsync(
       '-i "$readUrl"' //input (in double quotes to handle spaces)
       "${arnndnModel == null ? "" : " -filter:a 'arnndn=model=${arnndnModel.path}:mix=1.0' "}" //apply filters to audio streams: the arnndn denoise model
-      " ${targetFileType.getAdditionalArguments()} "
+      " ${targetFileType.getAdditionalArguments(
+        voiceOptimization: arnndnModel != null,
+      )} "
       " -y " //overwrite
       ' "$writeUrl"', //output
       (FFmpegSession session) async {
