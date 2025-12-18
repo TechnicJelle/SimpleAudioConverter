@@ -585,6 +585,11 @@ class _MyHomePageState extends State<MyHomePage> {
               // This is of course not supported here, so we replace it with a newline
               stacktrace: output?.replaceAll(String.fromCharCode(13), "\n"),
             );
+            setState(() {
+              convertProgress = null;
+              ffmpegSession = null;
+              done = false;
+            });
           }
         }
         final String? sizeStr = intToSize(
