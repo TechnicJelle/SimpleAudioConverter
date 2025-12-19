@@ -63,4 +63,5 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v6
         with:
+          name: SimpleAudioConverter__${{ github.event.inputs.TAG_NAME }}
           path: ./upload/*.apk
