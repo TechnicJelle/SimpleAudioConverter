@@ -10,6 +10,8 @@ on:
 env:
   FLUTTER_VERSION: '3.38.5'
 
+run-name: Build release version ${{ inputs.TAG_NAME }}
+
 jobs:
   check-version:
     runs-on: ubuntu-latest
