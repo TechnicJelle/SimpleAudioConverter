@@ -1,0 +1,6 @@
+A simple audio converter app for Android.
+
+Intended to be as simple and friendly to use as possible, potentially at the cost of some customisability.<br>
+If you want a lot of control over all the knobs and dials of the conversion, I recommend looking for another app.
+
+Made with Flutter, and uses ffmpeg for the conversions.

@@ -85,5 +85,5 @@ flutter:
   # see https://flutter.dev/to/font-from-package
 
 flutter_launcher_icons:
-  image_path: "assets/icon_2048.png"
+  image_path: "metadata/en-US/images/icon.png"
   android: true
