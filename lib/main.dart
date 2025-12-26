@@ -267,259 +267,257 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        child: loading
-            ? const Center(child: CircularProgressIndicator())
-            : thisInputFileInfo == null
-            ? Center(
-                child: ElevatedButton(
-                  onPressed: () async {
-                    final String? uri;
-                    try {
-                      uri = await pickFileRead();
-                    } catch (e, s) {
-                      if (context.mounted) {
-                        showErrorDialog(
-                          context: context,
-                          title: "Error showing file picker",
-                          error: e.toString(),
-                          stacktrace: s.toString(),
-                        );
-                      }
-                      return;
+      body: loading
+          ? const Center(child: CircularProgressIndicator())
+          : thisInputFileInfo == null
+          ? Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  final String? uri;
+                  try {
+                    uri = await pickFileRead();
+                  } catch (e, s) {
+                    if (context.mounted) {
+                      showErrorDialog(
+                        context: context,
+                        title: "Error showing file picker",
+                        error: e.toString(),
+                        stacktrace: s.toString(),
+                      );
                     }
-                    if (uri == null) return; // User canceled the picker
-                    try {
-                      unawaited(openFile(Path(uri: uri, needsSafing: true)));
-                    } catch (e, s) {
-                      if (context.mounted) {
-                        showErrorDialog(
-                          context: context,
-                          title: "Error opening file",
-                          error: e.toString(),
-                          stacktrace: s.toString(),
-                        );
-                      }
-                      return;
+                    return;
+                  }
+                  if (uri == null) return; // User canceled the picker
+                  try {
+                    unawaited(openFile(Path(uri: uri, needsSafing: true)));
+                  } catch (e, s) {
+                    if (context.mounted) {
+                      showErrorDialog(
+                        context: context,
+                        title: "Error opening file",
+                        error: e.toString(),
+                        stacktrace: s.toString(),
+                      );
                     }
-                  },
-                  child: const Text("Pick File"),
-                ),
-              )
-            : ListView(
-                children: [
-                  MediaInformationView(info: thisInputFileInfo),
+                    return;
+                  }
+                },
+                child: const Text("Pick File"),
+              ),
+            )
+          : ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              children: [
+                MediaInformationView(info: thisInputFileInfo),
+                const SizedBox(height: 32),
+                if (thisConvertProgress == null && !done) ...[
+                  Text("Filters", style: TextTheme.of(context).titleLarge),
+                  CheckboxListTile(
+                    value: voiceOptimization,
+                    onChanged: (bool? value) => setState(() {
+                      voiceOptimization = value ?? false;
+                    }),
+                    title: const Text(
+                      "Reduce background noise and optimize for voice",
+                    ),
+                  ),
                   const SizedBox(height: 32),
-                  if (thisConvertProgress == null && !done) ...[
-                    Text("Filters", style: TextTheme.of(context).titleLarge),
-                    CheckboxListTile(
-                      value: voiceOptimization,
-                      onChanged: (bool? value) => setState(() {
-                        voiceOptimization = value ?? false;
-                      }),
-                      title: const Text(
-                        "Reduce background noise and optimize for voice",
+                  Text("Target", style: TextTheme.of(context).titleLarge),
+                  const SizedBox(height: 8),
+                  DropdownButton<String>(
+                    value: thisTargetFileType.extension,
+                    items: const [
+                      DropdownMenuItem(
+                        value: "opus",
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Opus"),
+                            Text(
+                              "(Best compression & quality, good compatibility)",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 32),
-                    Text("Target", style: TextTheme.of(context).titleLarge),
-                    const SizedBox(height: 8),
-                    DropdownButton<String>(
-                      value: thisTargetFileType.extension,
-                      items: const [
-                        DropdownMenuItem(
-                          value: "opus",
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Opus"),
-                              Text(
-                                "(Best compression & quality, good compatibility)",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.grey,
-                                ),
+                      DropdownMenuItem(
+                        value: "mp3",
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("MP3"),
+                            Text(
+                              "(Fine compression & quality, best compatibility)",
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        DropdownMenuItem(
-                          value: "mp3",
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("MP3"),
-                              Text(
-                                "(Fine compression & quality, best compatibility)",
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                      onChanged: (String? value) {
-                        if (value == null) return;
-                        setState(() {
-                          targetFileType.extension = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 32),
-                    Text("Convert", style: TextTheme.of(context).titleLarge),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final String? targetUri;
-                        try {
-                          targetUri = await pickFileWrite(
-                            "audio.${thisTargetFileType.extension}",
-                            thisTargetFileType.getMimeType(),
-                          );
-                        } catch (e, s) {
-                          if (context.mounted) {
-                            showErrorDialog(
-                              context: context,
-                              title: "Error showing destination picker",
-                              error: e.toString(),
-                              stacktrace: s.toString(),
-                            );
-                          }
-                          return;
-                        }
-                        if (targetUri == null) return; // User canceled the picker
-                        done = false;
-                        final String? readUrl = await thisInputFileInfo.path.getUrl();
-                        if (readUrl == null) {
-                          if (context.mounted) {
-                            showErrorDialog(
-                              context: context,
-                              title: "Error parsing destination file path",
-                              error: "readUrl was null",
-                            );
-                          }
-                          return;
-                        }
-
-                        final String? writeSafUrl =
-                            await FFmpegKitConfig.getSafParameterForWrite(targetUri);
-                        if (writeSafUrl == null) {
-                          if (context.mounted) {
-                            showErrorDialog(
-                              context: context,
-                              title: "Error parsing target file path",
-                              error: "writeSafUrl was null",
-                            );
-                          }
-                          return;
-                        }
-
-                        unawaited(
-                          doTheConvert(
-                            inputFileInfo: thisInputFileInfo,
-                            readUrl: readUrl,
-                            targetFileType: thisTargetFileType,
-                            writeUrl: writeSafUrl,
-                          ),
+                      ),
+                    ],
+                    onChanged: (String? value) {
+                      if (value == null) return;
+                      setState(() {
+                        targetFileType.extension = value;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 32),
+                  Text("Convert", style: TextTheme.of(context).titleLarge),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final String? targetUri;
+                      try {
+                        targetUri = await pickFileWrite(
+                          "audio.${thisTargetFileType.extension}",
+                          thisTargetFileType.getMimeType(),
                         );
-                      },
-                      child: const Text("Pick Destination File"),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12),
-                      child: Text(
-                        "or",
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final String? readUrl = await thisInputFileInfo.path.getUrl();
-                        if (readUrl == null) {
-                          if (context.mounted) {
-                            showErrorDialog(
-                              context: context,
-                              title: "Error parsing destination file path",
-                              error: "readUrl was null",
-                            );
-                          }
-                          return;
+                      } catch (e, s) {
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error showing destination picker",
+                            error: e.toString(),
+                            stacktrace: s.toString(),
+                          );
                         }
+                        return;
+                      }
+                      if (targetUri == null) return; // User canceled the picker
+                      done = false;
+                      final String? readUrl = await thisInputFileInfo.path.getUrl();
+                      if (readUrl == null) {
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error parsing destination file path",
+                            error: "readUrl was null",
+                          );
+                        }
+                        return;
+                      }
 
-                        final Directory tempDir = await getTemporaryDirectory();
-                        final String filename =
-                            "${thisInputFileInfo.filename}.${thisTargetFileType.extension}";
-                        final String targetFilePath = p.join(tempDir.path, filename);
-                        final bool success = (await doTheConvert(
+                      final String? writeSafUrl =
+                          await FFmpegKitConfig.getSafParameterForWrite(targetUri);
+                      if (writeSafUrl == null) {
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error parsing target file path",
+                            error: "writeSafUrl was null",
+                          );
+                        }
+                        return;
+                      }
+
+                      unawaited(
+                        doTheConvert(
                           inputFileInfo: thisInputFileInfo,
                           readUrl: readUrl,
                           targetFileType: thisTargetFileType,
-                          writeUrl: targetFilePath,
-                        )).isValueSuccess();
-                        if (!success) return;
+                          writeUrl: writeSafUrl,
+                        ),
+                      );
+                    },
+                    child: const Text("Pick Destination File"),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      "or",
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final String? readUrl = await thisInputFileInfo.path.getUrl();
+                      if (readUrl == null) {
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error parsing destination file path",
+                            error: "readUrl was null",
+                          );
+                        }
+                        return;
+                      }
 
-                        final params = ShareParams(
-                          text: "Share $filename",
-                          files: [XFile(targetFilePath)],
-                        );
+                      final Directory tempDir = await getTemporaryDirectory();
+                      final String filename =
+                          "${thisInputFileInfo.filename}.${thisTargetFileType.extension}";
+                      final String targetFilePath = p.join(tempDir.path, filename);
+                      final bool success = (await doTheConvert(
+                        inputFileInfo: thisInputFileInfo,
+                        readUrl: readUrl,
+                        targetFileType: thisTargetFileType,
+                        writeUrl: targetFilePath,
+                      )).isValueSuccess();
+                      if (!success) return;
 
-                        await SharePlus.instance.share(params);
-                        setState(() {
-                          shared = params;
-                        });
-                      },
-                      child: const Text("Share to App"),
-                    ),
-                  ],
-                  if (thisConvertProgress != null || done)
-                    Text("Progress", style: TextTheme.of(context).titleLarge),
-                  if (thisConvertProgress != null) ...[
-                    Text("Converting to ${thisTargetFileType.extension}..."),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: LinearProgressIndicator(
-                        value: thisConvertProgress,
-                        minHeight: 8,
-                      ),
-                    ),
-                  ],
-                  if (thisFfmpegSession != null)
-                    ElevatedButton(
-                      onPressed: () async {
-                        await thisFfmpegSession.cancel();
-                        setState(() {
-                          convertProgress = null;
-                          ffmpegSession = null;
-                          done = false;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orangeAccent,
-                      ),
-                      child: const Text("Cancel"),
-                    ),
-                  if (done) ...[
-                    Text(
-                      "Done!",
-                      style: TextTheme.of(
-                        context,
-                      ).titleMedium?.copyWith(color: Colors.green),
-                    ),
-                    Text("Converted to ${thisTargetFileType.extension}!"),
-                    if (thisFinalSize != null) Text("Final size: $thisFinalSize"),
-                  ],
-                  if (thisShared != null)
-                    ElevatedButton(
-                      onPressed: () => unawaited(SharePlus.instance.share(thisShared)),
-                      child: const Text("Share again"),
-                    ),
+                      final params = ShareParams(
+                        text: "Share $filename",
+                        files: [XFile(targetFilePath)],
+                      );
+
+                      await SharePlus.instance.share(params);
+                      setState(() {
+                        shared = params;
+                      });
+                    },
+                    child: const Text("Share to App"),
+                  ),
                 ],
-              ),
-      ),
+                if (thisConvertProgress != null || done)
+                  Text("Progress", style: TextTheme.of(context).titleLarge),
+                if (thisConvertProgress != null) ...[
+                  Text("Converting to ${thisTargetFileType.extension}..."),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: LinearProgressIndicator(
+                      value: thisConvertProgress,
+                      minHeight: 8,
+                    ),
+                  ),
+                ],
+                if (thisFfmpegSession != null)
+                  ElevatedButton(
+                    onPressed: () async {
+                      await thisFfmpegSession.cancel();
+                      setState(() {
+                        convertProgress = null;
+                        ffmpegSession = null;
+                        done = false;
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orangeAccent,
+                    ),
+                    child: const Text("Cancel"),
+                  ),
+                if (done) ...[
+                  Text(
+                    "Done!",
+                    style: TextTheme.of(
+                      context,
+                    ).titleMedium?.copyWith(color: Colors.green),
+                  ),
+                  Text("Converted to ${thisTargetFileType.extension}!"),
+                  if (thisFinalSize != null) Text("Final size: $thisFinalSize"),
+                ],
+                if (thisShared != null)
+                  ElevatedButton(
+                    onPressed: () => unawaited(SharePlus.instance.share(thisShared)),
+                    child: const Text("Share again"),
+                  ),
+              ],
+            ),
     );
   }
 
