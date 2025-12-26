@@ -4,6 +4,11 @@ import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
 
+/// For Table Rows
+List<Widget> tr(String type, String? content, BuildContext context) {
+  return [Text(type, style: TextTheme.of(context).titleSmall), nText(content)];
+}
+
 /// Nullable Text Widget
 ///
 /// Says "Unknown" in italic grey if [str] is null.

@@ -237,6 +237,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: Tooltip(
+          message: "Simple Audio Converter",
+          child: Padding(
+            padding: const EdgeInsets.all(4),
+            child: Image.asset("assets/AppBar_Icon.png"),
+          ),
+        ),
         title: thisInputFileInfo == null
             ? const Text("Simple Audio Converter")
             : Tooltip(
@@ -302,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             : ListView(
                 children: [
-                  MediaInformationView(info: thisInputFileInfo.mediaInformation),
+                  MediaInformationView(info: thisInputFileInfo),
                   const SizedBox(height: 32),
                   if (thisConvertProgress == null && !done) ...[
                     Text("Filters", style: TextTheme.of(context).titleLarge),

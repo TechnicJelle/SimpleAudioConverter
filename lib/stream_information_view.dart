@@ -20,22 +20,18 @@ class StreamInformationView extends StatelessWidget {
       children: [
         Text(
           "Stream ${info.getIndex()} Information:",
-          style: TextTheme.of(context).titleMedium,
+          style: TextTheme.of(
+            context,
+          ).titleMedium?.copyWith(fontWeight: FontWeight.w500),
         ),
         Table(
           children: [
-            TableRow(
-              children: [const Text("Type:"), nText(info.getType())],
-            ),
-            TableRow(children: [const Text("Codec:"), nText(info.getCodec())]),
-            TableRow(children: [const Text("Format:"), nText(info.getFormat())]),
-            TableRow(
-              children: [const Text("Channel Layout:"), nText(info.getChannelLayout())],
-            ),
-            TableRow(children: [const Text("Bitrate:"), nText(bitrate)]),
-            TableRow(
-              children: [const Text("Sample Rate:"), nText(info.getSampleRate())],
-            ),
+            TableRow(children: tr("Type:", info.getType(), context)),
+            TableRow(children: tr("Codec:", info.getCodec(), context)),
+            TableRow(children: tr("Format:", info.getFormat(), context)),
+            TableRow(children: tr("Channel Layout:", info.getChannelLayout(), context)),
+            TableRow(children: tr("Bitrate:", bitrate, context)),
+            TableRow(children: tr("Sample Rate:", info.getSampleRate(), context)),
           ],
         ),
         const SizedBox(height: 4),

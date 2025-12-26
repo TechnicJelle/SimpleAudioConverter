@@ -1,11 +1,12 @@
 import "package:ffmpeg_kit_flutter_new_audio/media_information.dart";
 import "package:flutter/material.dart";
 
+import "main.dart";
 import "stream_information_view.dart";
 import "utils.dart";
 
 class MediaInformationView extends StatefulWidget {
-  final MediaInformation info;
+  final PickedFileInfo info;
 
   const MediaInformationView({required this.info, super.key});
 
@@ -14,7 +15,9 @@ class MediaInformationView extends StatefulWidget {
 }
 
 class _MediaInformationViewState extends State<MediaInformationView> {
-  MediaInformation get info => widget.info;
+  MediaInformation get info => widget.info.mediaInformation;
+
+  String get filename => widget.info.filename;
 
   bool open = false;
 
@@ -52,12 +55,15 @@ class _MediaInformationViewState extends State<MediaInformationView> {
             ],
           ),
         ),
+        //filenames can get long, so it's outside of the table, to ensure it doesn't get wrapped _too_ much
+        Row(children: tr("File name:  ", filename, context)),
+        const SizedBox(height: 1),
         Table(
           children: [
-            TableRow(children: [const Text("Format:"), nText(info.getFormat())]),
-            TableRow(children: [const Text("Size:"), nText(strToSize(info.getSize()))]),
-            TableRow(children: [const Text("Duration:"), nText(duration)]),
-            TableRow(children: [const Text("Bitrate:"), nText(bitrate)]),
+            TableRow(children: tr("Format:", info.getFormat(), context)),
+            TableRow(children: tr("Size:", strToSize(info.getSize()), context)),
+            TableRow(children: tr("Duration:", duration, context)),
+            TableRow(children: tr("Bitrate:", bitrate, context)),
           ],
         ),
         const SizedBox(height: 8),
