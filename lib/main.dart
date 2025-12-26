@@ -12,6 +12,8 @@ import "package:ffmpeg_kit_flutter_new_audio/return_code.dart";
 import "package:ffmpeg_kit_flutter_new_audio/statistics.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
+import "package:installed_apps/app_info.dart";
+import "package:installed_apps/installed_apps.dart";
 import "package:path/path.dart" as p;
 import "package:path_provider/path_provider.dart";
 import "package:share_handler/share_handler.dart";
@@ -130,9 +132,10 @@ class _MyHomePageState extends State<MyHomePage> {
   double? convertProgress;
   FFmpegSession? ffmpegSession;
   bool done = false;
-  ShareParams? shared;
+  ShareParams? sharedParams;
   String? finalSize;
   bool voiceOptimization = false;
+  String? sharedWithApp;
 
   @override
   void initState() {
@@ -221,8 +224,9 @@ class _MyHomePageState extends State<MyHomePage> {
       convertProgress = null;
       ffmpegSession = null;
       done = false;
-      shared = null;
+      sharedParams = null;
       finalSize = null;
+      sharedWithApp = null;
     });
   }
 
@@ -232,8 +236,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final thisTargetFileType = targetFileType;
     final thisConvertProgress = convertProgress;
     final thisFfmpegSession = ffmpegSession;
-    final thisShared = shared;
+    final thisSharedParams = sharedParams;
     final thisFinalSize = finalSize;
+    final thisSharedWithApp = sharedWithApp;
 
     return Scaffold(
       appBar: AppBar(
@@ -466,9 +471,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         files: [XFile(targetFilePath)],
                       );
 
-                      await SharePlus.instance.share(params);
+                      await share(params);
                       setState(() {
-                        shared = params;
+                        sharedParams = params;
                       });
                     },
                     child: const Text("Share to App"),
@@ -502,23 +507,45 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: const Text("Cancel"),
                   ),
                 if (done) ...[
+                  const SizedBox(height: 4),
                   Text(
                     "Done!",
                     style: TextTheme.of(
                       context,
                     ).titleMedium?.copyWith(color: Colors.green),
                   ),
+                  const SizedBox(height: 4),
                   Text("Converted to ${thisTargetFileType.extension}!"),
+                  const SizedBox(height: 2),
                   if (thisFinalSize != null) Text("Final size: $thisFinalSize"),
                 ],
-                if (thisShared != null)
-                  ElevatedButton(
-                    onPressed: () => unawaited(SharePlus.instance.share(thisShared)),
-                    child: const Text("Share again"),
+                if (thisSharedParams != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: ElevatedButton(
+                      onPressed: () => unawaited(share(thisSharedParams)),
+                      child: const Text("Share again"),
+                    ),
+                  ),
+                if (thisSharedWithApp != null)
+                  Text(
+                    "Successfully shared with: $thisSharedWithApp",
+                    style: TextTheme.of(context).titleMedium,
                   ),
               ],
             ),
     );
+  }
+
+  Future<void> share(ShareParams thisShared) async {
+    final shareResult = await SharePlus.instance.share(thisShared);
+    if (shareResult.status == ShareResultStatus.success) {
+      final String sharedWith = shareResult.raw;
+      final String appID = sharedWith.split("/").first;
+      final AppInfo? appInfo = await InstalledApps.getAppInfo(appID);
+      if (appInfo == null) return;
+      setState(() => sharedWithApp = appInfo.name);
+    }
   }
 
   Future<ReturnCode> doTheConvert({
