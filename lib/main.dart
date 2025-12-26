@@ -306,12 +306,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   const SizedBox(height: 32),
                   if (thisConvertProgress == null && !done) ...[
                     Text("Filters", style: TextTheme.of(context).titleLarge),
-                    CheckboxMenuButton(
+                    CheckboxListTile(
                       value: voiceOptimization,
                       onChanged: (bool? value) => setState(() {
                         voiceOptimization = value ?? false;
                       }),
-                      child: const Text(
+                      title: const Text(
                         "Reduce background noise and optimize for voice",
                       ),
                     ),

@@ -55,6 +55,15 @@ class TechApp extends MaterialApp {
                    borderRadius: BorderRadiusGeometry.circular(2),
                  ),
                ),
+               listTileTheme: ListTileThemeData(
+                 horizontalTitleGap: 0,
+                 titleTextStyle: TextTheme.of(
+                   context,
+                 ).titleSmall?.copyWith(fontWeight: FontWeight.w400),
+                 controlAffinity: ListTileControlAffinity.leading,
+                 contentPadding: EdgeInsets.zero,
+                 dense: true,
+               ),
              ),
              child: child!,
            );
