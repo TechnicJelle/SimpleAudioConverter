@@ -456,7 +456,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                       final Directory tempDir = await getTemporaryDirectory();
                       final String filename =
-                          "${thisInputFileInfo.filename}.${thisTargetFileType.extension}";
+                          "${p.withoutExtension(thisInputFileInfo.filename)}.${thisTargetFileType.extension}";
                       final String targetFilePath = p.join(tempDir.path, filename);
                       final bool success = (await doTheConvert(
                         inputFileInfo: thisInputFileInfo,
