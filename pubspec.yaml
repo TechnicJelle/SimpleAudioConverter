@@ -86,3 +86,6 @@ flutter:
 flutter_launcher_icons:
   image_path: "metadata/en-US/images/icon.png"
   android: true
+  adaptive_icon_background: "#4CAF50"
+  adaptive_icon_foreground: "metadata/en-US/images/icon.png"
+  adaptive_icon_foreground_inset: 18
