@@ -195,19 +195,26 @@ class _MyHomePageState extends State<MyHomePage> {
         await session.getState(),
       );
       final ReturnCode? returnCode = await session.getReturnCode();
-      final String? failStackTrace = await session.getFailStackTrace();
       final int duration = await session.getDuration();
       final String? output = await session.getOutput();
+      final String? failStackTrace = await session.getFailStackTrace();
       if (mounted) {
+        String? outputClean = output;
+        if (output != null) {
+          final regexp = RegExp(r"^\s*{*\s*(.*?)\s*}*\s*$", dotAll: true);
+          final RegExpMatch? match = regexp.firstMatch(output);
+          if (match != null) outputClean = match.group(1);
+        }
         showErrorDialog(
           context: context,
           title: "Error getting media information",
-          error:
+          error: "Likely incompatible file format",
+          stacktrace:
               "State: $state\n"
               "Return Code: $returnCode (${returnCode?.getValue()})\n"
               "Duration: $duration\n"
-              "Output:\n$output",
-          stacktrace: failStackTrace,
+              "${outputClean == null ? "" : "Output: $outputClean\n"}"
+              "${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $failStackTrace"}",
         );
       }
       setState(() => loading = false);
