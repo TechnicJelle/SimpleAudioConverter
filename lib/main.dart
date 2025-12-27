@@ -333,8 +333,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () async {
                       final String? targetUri;
                       try {
+                        //if the input file came from SAF, the filename isn't accurate and contains a ":"
+                        //in those cases, we'll hide that and just set it to audio.ext
+                        //in other cases where we do have the actual filename, we use that
+                        final String filename = thisInputFileInfo.filename.contains(":")
+                            ? "audio.${thisTargetFileType.extension}"
+                            : "${p.withoutExtension(thisInputFileInfo.filename)}.${thisTargetFileType.extension}";
                         targetUri = await pickFileWrite(
-                          "audio.${thisTargetFileType.extension}",
+                          filename,
                           thisTargetFileType.getMimeType(),
                         );
                       } catch (e, s) {
