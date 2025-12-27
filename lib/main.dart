@@ -461,7 +461,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         return;
                       }
 
-                      final Directory tempDir = await getTemporaryDirectory();
+                      final Directory tempDir = Directory(
+                        p.join(
+                          (await getTemporaryDirectory()).path,
+                          "ouput",
+                        ),
+                      )..createSync();
                       final String filename =
                           "${p.withoutExtension(thisInputFileInfo.filename)}.${thisTargetFileType.extension}";
                       final String targetFilePath = p.join(tempDir.path, filename);
