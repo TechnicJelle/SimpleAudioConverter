@@ -10,6 +10,7 @@ import "package:ffmpeg_kit_flutter_new_audio/media_information.dart";
 import "package:ffmpeg_kit_flutter_new_audio/media_information_session.dart";
 import "package:ffmpeg_kit_flutter_new_audio/return_code.dart";
 import "package:ffmpeg_kit_flutter_new_audio/statistics.dart";
+import "package:ffmpeg_kit_flutter_new_audio/stream_information.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
 import "package:installed_apps/app_info.dart";
@@ -208,13 +209,30 @@ class _MyHomePageState extends State<MyHomePage> {
         showErrorDialog(
           context: context,
           title: "Error getting media information",
-          error: "Likely incompatible file format",
+          error:
+              "The provided file is likely not a media file, so no audio can be extracted and converted from it.\n"
+              "Try another file.\n\nFurther details:",
           stacktrace:
               "State: $state\n"
-              "Return Code: $returnCode (${returnCode?.getValue()})\n"
-              "Duration: $duration\n"
-              "${outputClean == null ? "" : "Output: $outputClean\n"}"
-              "${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $failStackTrace"}",
+                      "Return Code: $returnCode (${returnCode?.getValue()})\n"
+                      "Duration: $duration\n"
+                      "${outputClean == null ? "" : "Output: $outputClean\n"}"
+                      "${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $failStackTrace\n"}"
+                  .trim(),
+        );
+      }
+      setState(() => loading = false);
+      return;
+    }
+
+    if (!information.getStreams().any(
+      (StreamInformation streamInfo) => streamInfo.getType() == "audio",
+    )) {
+      if (mounted) {
+        showErrorDialog(
+          context: context,
+          title: "File does not contain any audio",
+          error: "Try another file.",
         );
       }
       setState(() => loading = false);
@@ -729,6 +747,12 @@ void showErrorDialog({
             ],
           ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Understood"),
+          ),
+        ],
       ),
     ),
   );
