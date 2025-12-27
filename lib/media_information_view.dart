@@ -1,7 +1,7 @@
 import "package:ffmpeg_kit_flutter_new_audio/media_information.dart";
 import "package:flutter/material.dart";
 
-import "main.dart";
+import "picked_file_info.dart";
 import "stream_information_view.dart";
 import "utils.dart";
 

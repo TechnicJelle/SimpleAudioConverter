@@ -21,6 +21,9 @@ import "package:share_handler/share_handler.dart";
 import "package:share_plus/share_plus.dart";
 
 import "media_information_view.dart";
+import "path.dart";
+import "picked_file_info.dart";
+import "target_file_type.dart";
 import "tech_app.dart";
 import "utils.dart";
 
@@ -49,81 +52,6 @@ class MyHomePage extends StatefulWidget {
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
-}
-
-@immutable
-class Path {
-  final String uri;
-  final bool needsSafing;
-  final String filename;
-
-  Path({
-    required this.uri,
-    required this.needsSafing,
-  }) : filename = needsSafing
-           ? p.basename(Uri.decodeFull(p.basename(uri)))
-           : p.basename(uri);
-
-  Future<String?> getUrl() async {
-    if (needsSafing) {
-      return FFmpegKitConfig.getSafParameterForRead(uri);
-    }
-    return uri;
-  }
-
-  @override
-  String toString() {
-    return "Path{\n"
-        "\turi: $uri\n"
-        "\tneedsSafing: $needsSafing\n"
-        "\tfilename: $filename\n"
-        "}";
-  }
-}
-
-@immutable
-class PickedFileInfo {
-  final Path path;
-  final MediaInformation mediaInformation;
-
-  const PickedFileInfo({
-    required this.path,
-    required this.mediaInformation,
-  });
-
-  String get filename => path.filename;
-}
-
-class TargetFileType {
-  static const String _defaultExtension = "opus";
-  String extension;
-
-  TargetFileType({this.extension = _defaultExtension});
-
-  void reset() {
-    extension = _defaultExtension;
-  }
-
-  String? getMimeType() {
-    switch (extension) {
-      case "opus":
-        return "audio/opus";
-      case "mp3":
-        return "audio/mpeg";
-    }
-
-    return null;
-  }
-
-  String getAdditionalArguments({required bool voiceOptimization}) {
-    switch (extension) {
-      case "opus":
-        return "-c:a libopus" //codec for audio streams: libopus
-            "${voiceOptimization ? " -application voip " : ""}"; //https://ffmpeg.org/ffmpeg-codecs.html#libopus-1
-    }
-
-    return "";
-  }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
