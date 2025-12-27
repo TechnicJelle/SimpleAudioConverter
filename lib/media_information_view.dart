@@ -56,7 +56,10 @@ class _MediaInformationViewState extends State<MediaInformationView> {
           ),
         ),
         //filenames can get long, so it's outside of the table, to ensure it doesn't get wrapped _too_ much
-        Row(children: tr("File name:  ", filename, context)),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: tr("File name:  ", filename, context, inRow: true),
+        ),
         const SizedBox(height: 1),
         Table(
           children: [

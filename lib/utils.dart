@@ -5,8 +5,16 @@ import "package:flutter/services.dart";
 import "package:path_provider/path_provider.dart";
 
 /// For Table Rows
-List<Widget> tr(String type, String? content, BuildContext context) {
-  return [Text(type, style: TextTheme.of(context).titleSmall), nText(content)];
+List<Widget> tr(
+  String type,
+  String? content,
+  BuildContext context, {
+  bool inRow = false,
+}) {
+  return [
+    Text(type, style: TextTheme.of(context).titleSmall),
+    if (inRow) Flexible(child: nText(content)) else nText(content),
+  ];
 }
 
 /// Nullable Text Widget
