@@ -349,7 +349,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         return;
                       }
                       if (targetUri == null) return; // User canceled the picker
-                      done = false;
                       final String? readUrl = await thisInputFileInfo.path.getUrl();
                       if (readUrl == null) {
                         if (context.mounted) {
