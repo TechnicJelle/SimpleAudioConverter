@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       unawaited(openFile(Path(uri: media.attachments!.first!.path, needsSafing: false)));
     } catch (e, s) {
-      if (context.mounted) {
+      if (mounted) {
         showErrorDialog(
           context: context,
           title: "Error opening file",
@@ -355,17 +355,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         return;
                       }
                       if (targetUri == null) return; // User canceled the picker
-                      final String? readUrl = await thisInputFileInfo.path.getUrl();
-                      if (readUrl == null) {
-                        if (context.mounted) {
-                          showErrorDialog(
-                            context: context,
-                            title: "Error parsing destination file path",
-                            error: "readUrl was null",
-                          );
-                        }
-                        return;
-                      }
 
                       final String? writeSafUrl =
                           await FFmpegKitConfig.getSafParameterForWrite(targetUri);
@@ -383,7 +372,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       unawaited(
                         doTheConvert(
                           inputFileInfo: thisInputFileInfo,
-                          readUrl: readUrl,
                           targetFileType: thisTargetFileType,
                           writeUrl: writeSafUrl,
                         ),
@@ -400,18 +388,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      final String? readUrl = await thisInputFileInfo.path.getUrl();
-                      if (readUrl == null) {
-                        if (context.mounted) {
-                          showErrorDialog(
-                            context: context,
-                            title: "Error parsing destination file path",
-                            error: "readUrl was null",
-                          );
-                        }
-                        return;
-                      }
-
                       final Directory tempDir = Directory(
                         p.join(
                           (await getTemporaryDirectory()).path,
@@ -423,7 +399,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       final String targetFilePath = p.join(tempDir.path, filename);
                       final bool success = (await doTheConvert(
                         inputFileInfo: thisInputFileInfo,
-                        readUrl: readUrl,
                         targetFileType: thisTargetFileType,
                         writeUrl: targetFilePath,
                       )).isValueSuccess();
@@ -513,15 +488,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<ReturnCode> doTheConvert({
     required PickedFileInfo inputFileInfo,
-    required String readUrl,
     required TargetFileType targetFileType,
     required String writeUrl,
   }) async {
+    final String? readUrl = await inputFileInfo.path.getUrl();
+    if (readUrl == null) {
+      if (mounted) {
+        showErrorDialog(
+          context: context,
+          title: "Error parsing destination file path",
+          error: "readUrl was null",
+        );
+      }
+      return ReturnCode(1);
+    }
+
     final double? duration = double.tryParse(
       inputFileInfo.mediaInformation.getDuration() ?? "",
     );
     if (duration == null) {
-      if (context.mounted) {
+      if (mounted) {
         showErrorDialog(
           context: context,
           title: "Error parsing media duration",
