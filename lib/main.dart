@@ -542,7 +542,7 @@ class _MyHomePageState extends State<MyHomePage> {
       )} "
       " -y " //overwrite
       ' "$writeUrl"', //output
-      (FFmpegSession session) async {
+      /* completeCallback */ (FFmpegSession session) async {
         print("command: ${session.getCommand()}");
         final ReturnCode? returnCode = await session.getReturnCode();
         if (returnCode?.isValueCancel() ?? false) {
@@ -582,10 +582,10 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() => finalSize = sizeStr);
         completer.complete(returnCode);
       },
-      (Log log) {
+      /* logCallback */ (Log log) {
         print(log.getMessage());
       },
-      (Statistics statistics) {
+      /* statisticsCallback */ (Statistics statistics) {
         setState(() {
           convertProgress = statistics.getTime() / (duration * 1000);
         });
