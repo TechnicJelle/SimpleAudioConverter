@@ -88,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void openShared(SharedMedia media) {
     Path? path;
     try {
-      path = Path(uri: media.attachments!.first!.path, needsSafing: false);
+      path = Path(uri: media.attachments!.first!.path, sharedInto: true);
       unawaited(openFile(path));
     } catch (e, s) {
       if (mounted) {
@@ -253,7 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                   if (uri == null) return; // User canceled the picker
                   try {
-                    unawaited(openFile(Path(uri: uri, needsSafing: true)));
+                    unawaited(openFile(Path(uri: uri, sharedInto: false)));
                   } catch (e, s) {
                     if (context.mounted) {
                       showErrorDialog(

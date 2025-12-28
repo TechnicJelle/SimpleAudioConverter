@@ -7,42 +7,44 @@ import "package:path/path.dart" as p;
 
 @immutable
 class Path {
-  final String uri;
-  final bool needsSafing;
+  final String _uri;
+  final bool _sharedInto;
   final String filename;
 
   Path({
-    required this.uri,
-    required this.needsSafing,
-  }) : filename = needsSafing
-           ? p.basename(Uri.decodeFull(p.basename(uri)))
-           : p.basename(uri);
+    required String uri,
+    required bool sharedInto,
+  }) : _uri = uri,
+       _sharedInto = sharedInto,
+       filename = sharedInto
+           ? p.basename(uri)
+           : p.basename(Uri.decodeFull(p.basename(uri)));
+
+  bool get _needsSafing => !_sharedInto;
 
   Future<String?> getUrl() async {
-    if (needsSafing) {
-      return FFmpegKitConfig.getSafParameterForRead(uri);
+    if (_needsSafing) {
+      return FFmpegKitConfig.getSafParameterForRead(_uri);
     }
-    return uri;
+    return _uri;
   }
-
-  bool get sharedInto => !needsSafing;
 
   /// If the input file was shared into the app, a copy was made in the app's cache.
   /// That can now be deleted.
   Future<void> deleteIfNecessary() async {
-    if (sharedInto) {
-      print("Deleting temporary file: $uri");
-      unawaited(File(uri).delete());
+    if (_sharedInto) {
+      print("Deleting temporary file: $_uri");
+      unawaited(File(_uri).delete());
     }
   }
 
   @override
   String toString() {
     return "Path{\n"
-        "\turi: $uri\n"
-        "\tneedsSafing: $needsSafing\n"
+        "\turi: $_uri\n"
+        "\tsharedInto: $_sharedInto\n"
+        "\tneedsSafing: $_needsSafing\n"
         "\tfilename: $filename\n"
-        "\tsharedInto: $sharedInto\n"
         "}";
   }
 }
