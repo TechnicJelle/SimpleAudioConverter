@@ -78,11 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final SharedMedia? media = await handler.getInitialSharedMedia();
     if (media != null) openShared(media);
 
-    handler.sharedMediaStream.listen((SharedMedia media) {
-      if (!mounted) return;
-      openShared(media);
-    });
-    if (!mounted) return;
+    handler.sharedMediaStream.listen(openShared);
   }
 
   void openShared(SharedMedia media) {
