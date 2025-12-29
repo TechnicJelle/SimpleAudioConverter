@@ -55,6 +55,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late final Directory outputDir;
+  late final Directory shareOutputDir;
+
   bool loading = false;
   PickedFileInfo? inputFileInfo;
   final TargetFileType targetFileType = TargetFileType();
@@ -69,6 +72,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+    unawaited(
+      getTemporaryDirectory().then((Directory tempDir) {
+        outputDir = Directory(p.join(tempDir.path, "output"));
+        shareOutputDir = Directory(p.join(tempDir.path, "share_plus"));
+        resetOutputDirectory();
+      }),
+    );
     unawaited(initShareReceiving());
   }
 
@@ -103,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> openFile(Path path, {bool safIfy = false}) async {
     setState(() => loading = true);
 
+    resetOutputDirectory();
     final MediaInformationSession? session = await getMediaInfo(path);
     if (session == null) {
       if (mounted) {
@@ -185,6 +196,16 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void resetOutputDirectory() {
+    if (outputDir.existsSync()) {
+      outputDir.deleteSync(recursive: true);
+    }
+    outputDir.createSync(recursive: true);
+    if (shareOutputDir.existsSync()) {
+      shareOutputDir.deleteSync(recursive: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final thisInputFileInfo = inputFileInfo;
@@ -221,6 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 ffmpegSession = null;
                 done = false;
                 voiceOptimization = false;
+                resetOutputDirectory();
               }),
               icon: const Icon(Icons.clear),
               tooltip: "Clear file",
@@ -390,15 +412,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      final Directory tempDir = Directory(
-                        p.join(
-                          (await getTemporaryDirectory()).path,
-                          "ouput",
-                        ),
-                      )..createSync();
                       final String filename =
                           "${p.withoutExtension(thisInputFileInfo.filename)}.${thisTargetFileType.extension}";
-                      final String targetFilePath = p.join(tempDir.path, filename);
+                      final String targetFilePath = p.join(outputDir.path, filename);
                       final bool success = (await doTheConvert(
                         inputFileInfo: thisInputFileInfo,
                         targetFileType: thisTargetFileType,
