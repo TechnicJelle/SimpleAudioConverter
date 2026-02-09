@@ -31,7 +31,7 @@ dependencies:
   ffmpeg_kit_flutter_new_audio: ^2.0.0
   flutter:
     sdk: flutter
-  installed_apps: ^2.1.0
+  installed_apps: ^2.1.1
   path: ^1.9.0
   path_provider: ^2.1.5
   share_handler: ^0.0.25
