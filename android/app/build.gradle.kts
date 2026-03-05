@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ApplicationExtension
+
 plugins {
 	id("com.android.application")
 	id("kotlin-android")
@@ -5,7 +7,7 @@ plugins {
 	id("dev.flutter.flutter-gradle-plugin")
 }
 
-android {
+configure<ApplicationExtension> {
 	namespace = "com.technicjelle.simple_audio_converter"
 	compileSdk = flutter.compileSdkVersion
 	ndkVersion = flutter.ndkVersion
