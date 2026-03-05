@@ -8,7 +8,7 @@ on:
         required: true
 
 env:
-  FLUTTER_VERSION: '3.38.5'
+  FLUTTER_VERSION: '3.41.4'
 
 run-name: Build release version ${{ inputs.TAG_NAME }}
 
@@ -63,7 +63,8 @@ jobs:
           mv ./build/app/outputs/flutter-apk/app-release.apk ./upload/SimpleAudioConverter_${{ github.event.inputs.TAG_NAME }}.apk
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: SimpleAudioConverter__${{ github.event.inputs.TAG_NAME }}
           path: ./upload/*.apk
+          archive: false
