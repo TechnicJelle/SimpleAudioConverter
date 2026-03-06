@@ -54,17 +54,22 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build
+      - name: Build Universal
         run: flutter build apk --release
+
+      - name: Build Per ABI
+        run: flutter build apk --release --split-per-abi
 
       - name: Prepare for upload
         run: |
           mkdir upload
-          mv ./build/app/outputs/flutter-apk/app-release.apk ./upload/SimpleAudioConverter_${{ github.event.inputs.TAG_NAME }}.apk
+          mv ./build/app/outputs/flutter-apk/app-release.apk ./upload/SimpleAudioConverter_${{ github.event.inputs.TAG_NAME }}-universal.apk
+          mv ./build/app/outputs/flutter-apk/app-arm64-v8a-release.apk ./upload/SimpleAudioConverter_${{ github.event.inputs.TAG_NAME }}-arm64-v8a.apk
+          mv ./build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk ./upload/SimpleAudioConverter_${{ github.event.inputs.TAG_NAME }}-armeabi-v7a.apk
+          mv ./build/app/outputs/flutter-apk/app-x86_64-release.apk ./upload/SimpleAudioConverter_${{ github.event.inputs.TAG_NAME }}-x86_64.apk
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
           name: SimpleAudioConverter__${{ github.event.inputs.TAG_NAME }}
           path: ./upload/*.apk
-          archive: false
