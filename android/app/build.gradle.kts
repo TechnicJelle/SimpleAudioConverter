@@ -1,5 +1,6 @@
 import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.internal.api.ApkVariantOutputImpl
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
 	id("com.android.application")
@@ -15,10 +16,6 @@ configure<ApplicationExtension> {
 
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_17
-		targetCompatibility = JavaVersion.VERSION_17
-	}
-
-	compileOptions {
 		targetCompatibility = JavaVersion.VERSION_17
 	}
 
@@ -50,6 +47,12 @@ configure<ApplicationExtension> {
 				"proguard-rules.pro"
 			)
 		}
+	}
+}
+
+kotlin {
+	compilerOptions {
+		jvmTarget.set(JvmTarget.JVM_17)
 	}
 }
 
