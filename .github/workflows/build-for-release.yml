@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       TAG_NAME:
-        description: 'Version (Tag Name)'
+        description: 'Version (Tag Name (Do not include the build number))'
         required: true
 
 env:
@@ -27,7 +27,7 @@ jobs:
       - name: Check tag with project version
         run: |
           TAG_NAME=${{ github.event.inputs.TAG_NAME }}
-          PROJECT_VERSION=$(yq .version pubspec.yaml --raw-output)
+          PROJECT_VERSION=$(sed 's/\+.*$//g' <<< $(yq .version pubspec.yaml --raw-output))
           # Remove 'v' prefix from tag name
           TAG_VERSION=$(sed 's/^v//g' <<< "$TAG_NAME")
           if [ "$PROJECT_VERSION" != "$TAG_VERSION" ]; then
