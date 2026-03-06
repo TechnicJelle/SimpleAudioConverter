@@ -43,6 +43,7 @@ linter:
     avoid_escaping_inner_quotes: false
     sort_constructors_first: false
     flutter_style_todos: false
+    avoid_types_on_closure_parameters: false
 
 # Additional information about this file can be found at
 # https://dart.dev/guides/language/analysis-options
