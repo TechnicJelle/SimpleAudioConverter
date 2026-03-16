@@ -253,38 +253,49 @@ class _MyHomePageState extends State<MyHomePage> {
           ? const Center(child: CircularProgressIndicator())
           : thisInputFileInfo == null
           ? Center(
-              child: ElevatedButton(
-                onPressed: () async {
-                  final String? uri;
-                  try {
-                    uri = await pickFileRead();
-                  } catch (e, s) {
-                    if (context.mounted) {
-                      showErrorDialog(
-                        context: context,
-                        title: "Error showing file picker",
-                        error: e.toString(),
-                        stacktrace: s.toString(),
-                      );
-                    }
-                    return;
-                  }
-                  if (uri == null) return; // User canceled the picker
-                  try {
-                    unawaited(openFile(Path(uri: uri, sharedInto: false)));
-                  } catch (e, s) {
-                    if (context.mounted) {
-                      showErrorDialog(
-                        context: context,
-                        title: "Error opening file",
-                        error: e.toString(),
-                        stacktrace: s.toString(),
-                      );
-                    }
-                    return;
-                  }
-                },
-                child: const Text("Pick File"),
+              child: Column(
+                mainAxisSize: .min,
+                children: [
+                  ElevatedButton(
+                    onPressed: () async {
+                      final String? uri;
+                      try {
+                        uri = await pickFileRead();
+                      } catch (e, s) {
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error showing file picker",
+                            error: e.toString(),
+                            stacktrace: s.toString(),
+                          );
+                        }
+                        return;
+                      }
+                      if (uri == null) return; // User canceled the picker
+                      try {
+                        unawaited(openFile(Path(uri: uri, sharedInto: false)));
+                      } catch (e, s) {
+                        if (context.mounted) {
+                          showErrorDialog(
+                            context: context,
+                            title: "Error opening file",
+                            error: e.toString(),
+                            stacktrace: s.toString(),
+                          );
+                        }
+                        return;
+                      }
+                    },
+                    child: const Text("Pick File"),
+                  ),
+                  const Text("or", style: TextStyle(fontWeight: .bold, fontSize: 15)),
+                  const SizedBox(height: 4),
+                  const Text(
+                    "You can also share a media file from another app into\nSimple Audio Converter",
+                    textAlign: .center,
+                  ),
+                ],
               ),
             )
           : ListView(
@@ -407,7 +418,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: EdgeInsets.symmetric(horizontal: 12),
                     child: Text(
                       "or",
-                      textAlign: TextAlign.center,
+                      textAlign: .center,
+                      style: TextStyle(fontWeight: .bold, fontSize: 15),
                     ),
                   ),
                   ElevatedButton(
