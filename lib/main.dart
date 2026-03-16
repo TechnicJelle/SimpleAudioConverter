@@ -325,40 +325,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   Text("Target", style: TextTheme.of(context).titleLarge),
                   const SizedBox(height: 8),
                   DropdownButton<String>(
+                    itemHeight: 56,
                     value: thisTargetFileType.extension,
                     items: const [
                       DropdownMenuItem(
                         value: "opus",
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("Opus"),
-                            Text(
-                              "(Best compression & quality, good compatibility)",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+                        child: TargetFormatDropdownChild(
+                          label: "Opus",
+                          description: "Best compression & quality, good compatibility",
                         ),
                       ),
                       DropdownMenuItem(
                         value: "mp3",
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text("MP3"),
-                            Text(
-                              "(Fine compression & quality, best compatibility)",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
+                        child: TargetFormatDropdownChild(
+                          label: "MP3",
+                          description: "Fine compression & quality, best compatibility",
                         ),
                       ),
                     ],
@@ -694,6 +675,37 @@ class _MyHomePageState extends State<MyHomePage> {
     return FFprobeKit.getMediaInformationFromCommandArguments(
       commandArguments,
       waitTimeout,
+    );
+  }
+}
+
+class TargetFormatDropdownChild extends StatelessWidget {
+  final String label;
+  final String description;
+
+  const TargetFormatDropdownChild({
+    required this.label,
+    required this.description,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        text: "$label\n",
+        style: const TextStyle(height: 1.3),
+        children: [
+          TextSpan(
+            text: "($description)",
+            style: const TextStyle(
+              fontSize: 13,
+              fontStyle: FontStyle.italic,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
