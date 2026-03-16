@@ -287,7 +287,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         return;
                       }
                     },
-                    child: const Text("Pick File"),
+                    child: const Row(
+                      mainAxisSize: .min,
+                      children: [
+                        Icon(Icons.file_open_outlined),
+                        SizedBox(width: 4),
+                        Text("Pick File"),
+                      ],
+                    ),
                   ),
                   const Text("or", style: TextStyle(fontWeight: .bold, fontSize: 15)),
                   const SizedBox(height: 4),
@@ -412,7 +419,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       );
                     },
-                    child: const Text("Pick Destination File"),
+                    child: const Row(
+                      mainAxisSize: .min,
+                      children: [
+                        Icon(Icons.drive_file_move),
+                        SizedBox(width: 4),
+                        Text("Pick Destination File"),
+                      ],
+                    ),
                   ),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12),
@@ -444,7 +458,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         sharedParams = params;
                       });
                     },
-                    child: const Text("Share to App"),
+                    child: const Row(
+                      mainAxisSize: .min,
+                      children: [
+                        Icon(Icons.share),
+                        SizedBox(width: 4),
+                        Text("Share to App"),
+                      ],
+                    ),
                   ),
                 ],
                 if (thisConvertProgress != null || done)
@@ -492,7 +513,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: ElevatedButton(
                       onPressed: () => unawaited(share(thisSharedParams)),
-                      child: const Text("Share again"),
+                      child: const Row(
+                        mainAxisSize: .min,
+                        children: [
+                          Icon(Icons.share),
+                          SizedBox(width: 4),
+                          Text("Share again"),
+                        ],
+                      ),
                     ),
                   ),
                 if (thisSharedWithApp != null)
