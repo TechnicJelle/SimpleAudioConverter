@@ -1,6 +1,4 @@
-import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.gradle.internal.api.ApkVariantOutputImpl
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
 	id("com.android.application")
@@ -9,7 +7,7 @@ plugins {
 	id("dev.flutter.flutter-gradle-plugin")
 }
 
-configure<ApplicationExtension> {
+android {
 	namespace = "com.technicjelle.simple_audio_converter"
 	compileSdk = flutter.compileSdkVersion
 	ndkVersion = flutter.ndkVersion
@@ -17,6 +15,10 @@ configure<ApplicationExtension> {
 	compileOptions {
 		sourceCompatibility = JavaVersion.VERSION_17
 		targetCompatibility = JavaVersion.VERSION_17
+	}
+
+	kotlinOptions {
+		jvmTarget = JavaVersion.VERSION_17.toString()
 	}
 
 	defaultConfig {
@@ -47,12 +49,6 @@ configure<ApplicationExtension> {
 				"proguard-rules.pro"
 			)
 		}
-	}
-}
-
-kotlin {
-	compilerOptions {
-		jvmTarget.set(JvmTarget.JVM_17)
 	}
 }
 
