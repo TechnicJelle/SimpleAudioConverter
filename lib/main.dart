@@ -591,6 +591,7 @@ class _MyHomePageState extends State<MyHomePage> {
             done = false;
           });
         } else if (returnCode?.isValueSuccess() ?? false) {
+          inputFileInfo.path.deleteIfNecessary();
           setState(() {
             convertProgress = null;
             ffmpegSession = null;
@@ -620,8 +621,6 @@ class _MyHomePageState extends State<MyHomePage> {
         );
         setState(() => finalSize = sizeStr);
         completer.complete(returnCode);
-
-        inputFileInfo.path.deleteIfNecessary();
       },
       /* logCallback */ (Log log) {
         print(log.getMessage());
