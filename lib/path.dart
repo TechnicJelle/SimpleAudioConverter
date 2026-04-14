@@ -31,7 +31,7 @@ class Path {
 
   /// If the input file was shared into the app, a copy was made in the app's cache.
   /// That can now be deleted.
-  Future<void> deleteIfNecessary() async {
+  void deleteIfNecessary() {
     if (_sharedInto) {
       print("Deleting temporary file: $_uri");
       unawaited(File(_uri).delete());

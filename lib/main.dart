@@ -105,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
           stacktrace: s.toString(),
         );
       }
-      unawaited(path?.deleteIfNecessary());
+      path?.deleteIfNecessary();
       return;
     }
   }
@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
 
       setState(() => loading = false);
-      unawaited(path.deleteIfNecessary());
+      path.deleteIfNecessary();
       return;
     }
     final MediaInformation? information = session.getMediaInformation();
@@ -161,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       }
       setState(() => loading = false);
-      unawaited(path.deleteIfNecessary());
+      path.deleteIfNecessary();
       return;
     }
 
@@ -176,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       }
       setState(() => loading = false);
-      unawaited(path.deleteIfNecessary());
+      path.deleteIfNecessary();
       return;
     }
 
@@ -621,7 +621,7 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() => finalSize = sizeStr);
         completer.complete(returnCode);
 
-        unawaited(inputFileInfo.path.deleteIfNecessary());
+        inputFileInfo.path.deleteIfNecessary();
       },
       /* logCallback */ (Log log) {
         print(log.getMessage());
