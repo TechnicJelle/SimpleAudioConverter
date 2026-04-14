@@ -89,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
+  ffi_leak_tracker:
+    dependency: transitive
+    description:
+      name: ffi_leak_tracker
+      sha256: "4093d4ef9ca06ffe2786e73bfb25e22aa92112b9bb4ec941f11e3e6b61489a97"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   ffmpeg_kit_flutter_new_audio:
     dependency: "direct main"
     description:
@@ -359,18 +367,18 @@ packages:
     dependency: "direct main"
     description:
       name: share_plus
-      sha256: "14c8860d4de93d3a7e53af51bff479598c4e999605290756bbbe45cf65b37840"
+      sha256: ad3e91cabb7dc3c7687e0f4bdaf24fb192141d11bfbf9ddea7c26f3d4e8bfb5d
       url: "https://pub.dev"
     source: hosted
-    version: "12.0.1"
+    version: "13.0.0"
   share_plus_platform_interface:
     dependency: transitive
     description:
       name: share_plus_platform_interface
-      sha256: "88023e53a13429bd65d8e85e11a9b484f49d4c190abbd96c7932b74d6927cc9a"
+      sha256: ccf360f79b95993b083259d8f37baf20a47bcf8e2551ccebdc4f781b4d15e734
       url: "https://pub.dev"
     source: hosted
-    version: "6.1.0"
+    version: "7.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -476,10 +484,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: d7cb55e04cd34096cd3a79b3330245f54cb96a370a1c27adb3c84b917de8b08e
+      sha256: "316d813e24518851c2682b1a57bc7e2e54e9c7b81493d48bef502fea0c17f841"
       url: "https://pub.dev"
     source: hosted
-    version: "5.15.0"
+    version: "6.0.1"
   xdg_directories:
     dependency: transitive
     description:
