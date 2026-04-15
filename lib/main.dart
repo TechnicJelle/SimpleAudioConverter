@@ -327,20 +327,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   DropdownButton<String>(
                     itemHeight: 56,
                     value: thisTargetFileType.extension,
-                    items: const [
-                      DropdownMenuItem(
-                        value: "opus",
-                        child: TargetFormatDropdownChild(
-                          label: "Opus",
-                          description: "Best compression & quality, good compatibility",
-                        ),
+                    items: [
+                      TargetFormatDropdownItem(
+                        label: "Opus",
+                        description: "Best compression & quality, good compatibility",
                       ),
-                      DropdownMenuItem(
-                        value: "mp3",
-                        child: TargetFormatDropdownChild(
-                          label: "MP3",
-                          description: "Fine compression & quality, best compatibility",
-                        ),
+                      TargetFormatDropdownItem(
+                        label: "MP3",
+                        description: "Fine compression & quality, best compatibility",
                       ),
                     ],
                     onChanged: (String? value) {
@@ -678,35 +672,31 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class TargetFormatDropdownChild extends StatelessWidget {
-  final String label;
-  final String description;
-
-  const TargetFormatDropdownChild({
-    required this.label,
-    required this.description,
+class TargetFormatDropdownItem extends DropdownMenuItem<String> {
+  /// The [DropdownMenuItem]'s `value` is derived from the [label]
+  TargetFormatDropdownItem({
+    required String label,
+    required String description,
     super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        text: "$label\n",
-        style: const TextStyle(height: 1.3),
-        children: [
-          TextSpan(
-            text: "($description)",
-            style: const TextStyle(
-              fontSize: 13,
-              fontStyle: FontStyle.italic,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  }) : super(
+         value: label.toLowerCase(),
+         child: RichText(
+           text: TextSpan(
+             text: "$label\n",
+             style: const TextStyle(height: 1.3),
+             children: [
+               TextSpan(
+                 text: "($description)",
+                 style: const TextStyle(
+                   fontSize: 13,
+                   fontStyle: FontStyle.italic,
+                   color: Colors.grey,
+                 ),
+               ),
+             ],
+           ),
+         ),
+       );
 }
 
 void showErrorDialog({
