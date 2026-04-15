@@ -4,10 +4,14 @@
 
 A simple audio converter app for Android
 
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">](https://f-droid.org/packages/com.technicjelle.simple_audio_converter)
+[<img src="https://github.com/user-attachments/assets/dc8d2a01-7d24-4156-8428-1d0abc31c6c9"
+    alt="Get it on GitHub"
+    height="80">](../../releases)
+
 https://github.com/user-attachments/assets/a857edd9-2049-43c8-8ce7-ef0cdeb1d1e6
-
-[<img src="https://f-droid.org/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/packages/com.technicjelle.simple_audio_converter)
-
 
 Intended to be as simple and friendly to use as possible, potentially at the cost of some customisability.  
 If you want a lot of control over all the knobs and dials of the conversion, I recommend looking for another app.
