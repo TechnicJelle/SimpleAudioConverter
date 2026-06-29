@@ -223,10 +223,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
+      sha256: "1741988757a65eb6b36abe716829688cf01910bbf91c34354ff7ec1c3de2b349"
       url: "https://pub.dev"
     source: hosted
-    version: "1.17.0"
+    version: "1.18.0"
   mime:
     dependency: transitive
     description:
@@ -391,18 +391,18 @@ packages:
     dependency: "direct main"
     description:
       name: share_plus
-      sha256: ad3e91cabb7dc3c7687e0f4bdaf24fb192141d11bfbf9ddea7c26f3d4e8bfb5d
+      sha256: "9eee8283462d91a7a1c8bdb67d08874abd75a2f8fae3bc0ca033035e375fb3d8"
       url: "https://pub.dev"
     source: hosted
-    version: "13.0.0"
+    version: "13.2.0"
   share_plus_platform_interface:
     dependency: transitive
     description:
       name: share_plus_platform_interface
-      sha256: ccf360f79b95993b083259d8f37baf20a47bcf8e2551ccebdc4f781b4d15e734
+      sha256: "7f7ae28cf400d13f811e297ff37742dba83b79e0a6f5dce14eec0248274e6ce9"
       url: "https://pub.dev"
     source: hosted
-    version: "7.0.0"
+    version: "7.1.0"
   sky_engine:
     dependency: transitive
     description: flutter

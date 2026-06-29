@@ -35,7 +35,7 @@ dependencies:
   path: ^1.9.1
   path_provider: ^2.1.5
   share_handler: ^0.0.25
-  share_plus: ^13.0.0
+  share_plus: ^13.2.0
 
 
 dev_dependencies:
