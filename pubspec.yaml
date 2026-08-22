@@ -28,7 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  ffmpeg_kit_flutter_new_audio: ^2.0.0
+  ffmpeg_kit_flutter_new_audio: ^2.5.2
   flutter:
     sdk: flutter
   installed_apps: ^2.1.1
