@@ -8,7 +8,7 @@ on:
         required: true
 
 env:
-  FLUTTER_VERSION: '3.41.6'
+  FLUTTER_VERSION: '3.47.1'
 
 run-name: Build release version ${{ inputs.TAG_NAME }}
 
