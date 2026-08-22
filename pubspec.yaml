@@ -28,19 +28,19 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  ffmpeg_kit_flutter_new_audio: ^2.0.0
+  ffmpeg_kit_flutter_new_audio: ^2.5.2
   flutter:
     sdk: flutter
   installed_apps: ^2.1.1
   path: ^1.9.1
   path_provider: ^2.1.6
   share_handler: ^0.0.25
-  share_plus: ^13.2.1
+  share_plus: ^13.3.0
 
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4
-  very_good_analysis: ^10.2.0
+  very_good_analysis: ^10.3.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
