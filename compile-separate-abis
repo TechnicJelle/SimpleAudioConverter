@@ -1,0 +1,28 @@
+#!/bin/bash
+set -euo pipefail
+cd "$(dirname "$0")"
+
+## Small script for verifying that the ABI VersionCodes are correct.
+## The resulting VersionCodes should be the VersionCode from the pubspec.yaml, followed by a number:
+## 2 for arm64-v8a
+## 1 for armeabi-v7a
+## 3 for x86_64
+
+# Clean old build
+rm -r build
+
+# Build
+flutter build apk --release --split-per-abi
+
+# Extract generated APKs
+cd build/app/outputs/flutter-apk || exit
+for file in *.apk; do
+	apktool decode -f "$file"
+done
+
+# Display resulting VersionCodes per ABI
+printf "\n\n-----------------------------------------"
+for dir in */; do
+	printf "\n"
+	grep -E "(^apkFileName)|(^\s*versionCode)" "$dir/apktool.yml" | bat --language yaml --style plain
+done
