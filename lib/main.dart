@@ -157,8 +157,8 @@ Further details:""",
           stacktrace:
               """
 State: $state
-Return Code: $returnCode (${returnCode?.getValue()})
-Duration: $duration
+Return Code: ${returnCode?.getValue()}
+Duration: $duration ms
 ${outputClean == null ? "" : "Output: $outputClean"}
 ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $failStackTrace"}"""
                   .trim(),
