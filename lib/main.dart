@@ -61,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool loading = false;
   PickedFileInfo? inputFileInfo;
   final TargetFileType targetFileType = TargetFileType();
+  bool showProgressBar = false;
   double? convertProgress;
   FFmpegSession? ffmpegSession;
   bool done = false;
@@ -187,6 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mediaInformation: information,
       );
       targetFileType.reset();
+      showProgressBar = false;
       convertProgress = null;
       ffmpegSession = null;
       done = false;
@@ -210,7 +212,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final thisInputFileInfo = inputFileInfo;
     final thisTargetFileType = targetFileType;
-    final thisConvertProgress = convertProgress;
     final thisFfmpegSession = ffmpegSession;
     final thisSharedParams = sharedParams;
     final thisFinalSize = finalSize;
@@ -232,12 +233,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text(thisInputFileInfo.filename),
               ),
         actions: [
-          if (thisInputFileInfo != null && thisConvertProgress == null)
+          if (thisInputFileInfo != null && !showProgressBar)
             IconButton(
               onPressed: () => setState(() {
                 loading = false;
                 inputFileInfo = null;
                 targetFileType.reset();
+                showProgressBar = false;
                 convertProgress = null;
                 ffmpegSession = null;
                 done = false;
@@ -310,7 +312,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 MediaInformationView(info: thisInputFileInfo),
                 const SizedBox(height: 32),
-                if (thisConvertProgress == null && !done) ...[
+                if (!showProgressBar && !done) ...[
                   Text("Filters", style: TextTheme.of(context).titleLarge),
                   CheckboxListTile(
                     value: voiceOptimization,
@@ -443,14 +445,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ],
-                if (thisConvertProgress != null || done)
+                if (showProgressBar || done)
                   Text("Progress", style: TextTheme.of(context).titleLarge),
-                if (thisConvertProgress != null) ...[
+                if (showProgressBar) ...[
                   Text("Converting to ${thisTargetFileType.extension}..."),
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
                     child: LinearProgressIndicator(
-                      value: thisConvertProgress,
+                      value: convertProgress,
                       minHeight: 8,
                     ),
                   ),
@@ -460,6 +462,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     onPressed: () async {
                       await thisFfmpegSession.cancel();
                       setState(() {
+                        showProgressBar = false;
                         convertProgress = null;
                         ffmpegSession = null;
                         done = false;
@@ -539,18 +542,9 @@ class _MyHomePageState extends State<MyHomePage> {
     final double? duration = double.tryParse(
       inputFileInfo.mediaInformation.getDuration() ?? "",
     );
-    if (duration == null) {
-      if (mounted) {
-        showErrorDialog(
-          context: context,
-          title: "Error parsing media duration",
-          error: "duration was null",
-        );
-      }
-      return ReturnCode(1);
-    }
 
     setState(() {
+      showProgressBar = true;
       convertProgress = 0.0;
       ffmpegSession = null;
       done = false;
@@ -580,6 +574,7 @@ class _MyHomePageState extends State<MyHomePage> {
         final ReturnCode? returnCode = await session.getReturnCode();
         if (returnCode?.isValueCancel() ?? false) {
           setState(() {
+            showProgressBar = false;
             convertProgress = null;
             ffmpegSession = null;
             done = false;
@@ -587,6 +582,7 @@ class _MyHomePageState extends State<MyHomePage> {
         } else if (returnCode?.isValueSuccess() ?? false) {
           inputFileInfo.path.deleteIfNecessary();
           setState(() {
+            showProgressBar = false;
             convertProgress = null;
             ffmpegSession = null;
             done = true;
@@ -604,6 +600,7 @@ class _MyHomePageState extends State<MyHomePage> {
               stacktrace: output?.replaceAll(String.fromCharCode(13), "\n"),
             );
             setState(() {
+              showProgressBar = false;
               convertProgress = null;
               ffmpegSession = null;
               done = false;
@@ -621,7 +618,9 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       /* statisticsCallback */ (Statistics statistics) {
         setState(() {
-          convertProgress = statistics.getTime() / (duration * 1000);
+          convertProgress = duration == null
+              ? null
+              : statistics.getTime() / (duration * 1000);
         });
       },
     );
