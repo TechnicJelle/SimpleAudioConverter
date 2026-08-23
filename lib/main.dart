@@ -149,15 +149,18 @@ class _MyHomePageState extends State<MyHomePage> {
         showErrorDialog(
           context: context,
           title: "Error getting media information",
-          error:
-              "The provided file is likely not a media file, so no audio can be extracted and converted from it.\n"
-              "Try another file.\n\nFurther details:",
+          error: """
+The provided file is likely not a media file, so no audio can be extracted and converted from it.
+Try another file.
+
+Further details:""",
           stacktrace:
-              "State: $state\n"
-                      "Return Code: $returnCode (${returnCode?.getValue()})\n"
-                      "Duration: $duration\n"
-                      "${outputClean == null ? "" : "Output: $outputClean\n"}"
-                      "${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $failStackTrace\n"}"
+              """
+State: $state
+Return Code: $returnCode (${returnCode?.getValue()})
+Duration: $duration
+${outputClean == null ? "" : "Output: $outputClean"}
+${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $failStackTrace"}"""
                   .trim(),
         );
       }
