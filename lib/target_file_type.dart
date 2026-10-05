@@ -11,6 +11,8 @@ class TargetFileType {
   String? getMimeType() => switch (extension) {
     "opus" => "audio/opus",
     "mp3" => "audio/mpeg",
+    "flac" => "audio/flac",
+    "wav" => "audio/wav",
     _ => null,
   };
 

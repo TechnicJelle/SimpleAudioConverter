@@ -347,6 +347,22 @@ ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $f
                           "Compatibility": "best",
                         },
                       ),
+                      TargetFormatDropdownItem(
+                        label: "FLAC",
+                        description: const {
+                          "Compression": "good (large file size)",
+                          "Quality": "best",
+                          "Compatibility": "good",
+                        },
+                      ),
+                      TargetFormatDropdownItem(
+                        label: "WAV",
+                        description: const {
+                          "Compression": "none (huge file size)",
+                          "Quality": "best",
+                          "Compatibility": "very good",
+                        },
+                      ),
                     ],
                     onChanged: (String? value) {
                       if (value == null) return;
