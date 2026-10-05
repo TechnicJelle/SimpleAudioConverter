@@ -232,7 +232,7 @@ ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $f
             ? const Text("Simple Audio Converter")
             : Tooltip(
                 message: thisInputFileInfo.filename,
-                child: Text(thisInputFileInfo.filename),
+                child: Text(thisInputFileInfo.filename, maxLines: 2),
               ),
         actions: [
           if (thisInputFileInfo != null && !showProgressBar)
