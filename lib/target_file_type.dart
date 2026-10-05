@@ -8,24 +8,17 @@ class TargetFileType {
     extension = _defaultExtension;
   }
 
-  String? getMimeType() {
-    switch (extension) {
-      case "opus":
-        return "audio/opus";
-      case "mp3":
-        return "audio/mpeg";
-    }
+  String? getMimeType() => switch (extension) {
+    "opus" => "audio/opus",
+    "mp3" => "audio/mpeg",
+    _ => null,
+  };
 
-    return null;
-  }
-
-  String getAdditionalArguments({required bool voiceOptimization}) {
-    switch (extension) {
-      case "opus":
-        return "-c:a libopus" //codec for audio streams: libopus
-            "${voiceOptimization ? " -application voip " : ""}"; //https://ffmpeg.org/ffmpeg-codecs.html#libopus-1
-    }
-
-    return "";
-  }
+  String getAdditionalArguments({required bool voiceOptimization}) =>
+      switch (extension) {
+        "opus" =>
+          "-c:a libopus" //codec for audio streams: libopus
+              "${voiceOptimization ? " -application voip " : ""}", //https://ffmpeg.org/ffmpeg-codecs.html#libopus-1
+        _ => "",
+      };
 }

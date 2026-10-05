@@ -327,16 +327,25 @@ ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $f
                   Text("Target", style: TextTheme.of(context).titleLarge),
                   const SizedBox(height: 8),
                   DropdownButton<String>(
-                    itemHeight: 56,
+                    itemHeight: 90,
+                    isExpanded: true,
                     value: thisTargetFileType.extension,
                     items: [
                       TargetFormatDropdownItem(
                         label: "Opus",
-                        description: "Best compression & quality, good compatibility",
+                        description: const {
+                          "Compression": "best",
+                          "Quality": "good",
+                          "Compatibility": "good",
+                        },
                       ),
                       TargetFormatDropdownItem(
                         label: "MP3",
-                        description: "Fine compression & quality, best compatibility",
+                        description: const {
+                          "Compression": "fine",
+                          "Quality": "fine",
+                          "Compatibility": "best",
+                        },
                       ),
                     ],
                     onChanged: (String? value) {
@@ -670,22 +679,34 @@ class TargetFormatDropdownItem extends DropdownMenuItem<String> {
   /// The [DropdownMenuItem]'s `value` is derived from the [label]
   new({
     required String label,
-    required String description,
+    required Map<String, String> description,
     super.key,
   }) : super(
          value: label.toLowerCase(),
          child: RichText(
            text: TextSpan(
              text: "$label\n",
-             style: const TextStyle(height: 1.3),
+             style: const TextStyle(fontSize: 15, height: 1.3),
              children: [
-               TextSpan(
-                 text: "($description)",
-                 style: const TextStyle(
-                   fontSize: 13,
-                   fontStyle: FontStyle.italic,
-                   color: Colors.grey,
-                 ),
+               ...description.entries.map(
+                 (entry) {
+                   final bool isLastEntry = entry.key != description.entries.last.key;
+                   return TextSpan(
+                     text: "${entry.key}: ",
+                     style: const TextStyle(
+                       fontSize: 13,
+                       fontStyle: FontStyle.italic,
+                       fontWeight: .bold,
+                       color: Colors.grey,
+                     ),
+                     children: [
+                       TextSpan(
+                         text: entry.value + (isLastEntry ? "\n" : ""),
+                         style: const TextStyle(fontWeight: .normal),
+                       ),
+                     ],
+                   );
+                 },
                ),
              ],
            ),
