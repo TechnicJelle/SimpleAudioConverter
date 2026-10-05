@@ -51,7 +51,7 @@ Future<File> getFileFromAssets(String path) async {
     final byteData = await rootBundle.load("assets/$path");
     final buffer = byteData.buffer;
     await file.create(recursive: true);
-    return file.writeAsBytes(
+    return await file.writeAsBytes(
       buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes),
     );
   }

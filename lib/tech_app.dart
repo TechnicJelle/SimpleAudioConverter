@@ -6,7 +6,7 @@ class TechApp extends MaterialApp {
   final String? fontFamily;
   final double? fontSizeFactor;
 
-  TechApp({
+  new({
     required super.title,
     required this.primary,
     required this.secondary,

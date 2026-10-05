@@ -6,7 +6,7 @@ import "utils.dart";
 class StreamInformationView extends StatelessWidget {
   final StreamInformation info;
 
-  const StreamInformationView({required this.info, super.key});
+  const new({required this.info, super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -13,7 +13,6 @@ import "package:ffmpeg_kit_flutter_new_audio/statistics.dart";
 import "package:ffmpeg_kit_flutter_new_audio/stream_information.dart";
 import "package:flutter/material.dart";
 import "package:flutter/services.dart";
-import "package:installed_apps/app_info.dart";
 import "package:installed_apps/installed_apps.dart";
 import "package:path/path.dart" as p;
 import "package:path_provider/path_provider.dart";
@@ -33,7 +32,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const new({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +47,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const new({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -322,9 +321,7 @@ ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $f
                     onChanged: (bool? value) => setState(() {
                       voiceOptimization = value ?? false;
                     }),
-                    title: const Text(
-                      "Reduce background noise and optimize for voice",
-                    ),
+                    title: const Text("Reduce background noise and optimize for voice"),
                   ),
                   const SizedBox(height: 32),
                   Text("Target", style: TextTheme.of(context).titleLarge),
@@ -454,10 +451,7 @@ ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $f
                   Text("Converting to ${thisTargetFileType.extension}..."),
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: LinearProgressIndicator(
-                      value: convertProgress,
-                      minHeight: 8,
-                    ),
+                    child: LinearProgressIndicator(value: convertProgress, minHeight: 8),
                   ),
                 ],
                 if (thisFfmpegSession != null)
@@ -567,9 +561,7 @@ ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $f
     final session = await FFmpegKit.executeAsync(
       '-i "$readUrl"' //input (in double quotes to handle spaces)
       "${arnndnModel == null ? "" : " -filter:a 'arnndn=model=${arnndnModel.path}:mix=1.0' "}" //apply filters to audio streams: the arnndn denoise model
-      " ${targetFileType.getAdditionalArguments(
-        voiceOptimization: arnndnModel != null,
-      )} "
+      " ${targetFileType.getAdditionalArguments(voiceOptimization: arnndnModel != null)} "
       " -y " //overwrite
       ' "$writeUrl"', //output
       /* completeCallback */ (FFmpegSession session) async {
@@ -631,7 +623,7 @@ ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $f
       ffmpegSession = session;
     });
 
-    return completer.future;
+    return await completer.future;
   }
 
   static Future<String?> pickFileRead() async {
@@ -667,7 +659,7 @@ ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $f
       "-i",
       url,
     ];
-    return FFprobeKit.getMediaInformationFromCommandArguments(
+    return await FFprobeKit.getMediaInformationFromCommandArguments(
       commandArguments,
       waitTimeout,
     );
@@ -676,7 +668,7 @@ ${failStackTrace == null || failStackTrace.trim().isEmpty ? "" : "Stacktrace: $f
 
 class TargetFormatDropdownItem extends DropdownMenuItem<String> {
   /// The [DropdownMenuItem]'s `value` is derived from the [label]
-  TargetFormatDropdownItem({
+  new({
     required String label,
     required String description,
     super.key,

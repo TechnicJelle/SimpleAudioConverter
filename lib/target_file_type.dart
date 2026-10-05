@@ -2,7 +2,7 @@ class TargetFileType {
   static const String _defaultExtension = "opus";
   String extension;
 
-  TargetFileType({this.extension = _defaultExtension});
+  new({this.extension = _defaultExtension});
 
   void reset() {
     extension = _defaultExtension;

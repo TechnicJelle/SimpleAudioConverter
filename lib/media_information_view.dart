@@ -8,7 +8,7 @@ import "utils.dart";
 class MediaInformationView extends StatefulWidget {
   final PickedFileInfo info;
 
-  const MediaInformationView({required this.info, super.key});
+  const new({required this.info, super.key});
 
   @override
   State<MediaInformationView> createState() => _MediaInformationViewState();

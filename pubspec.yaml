@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.4+5
 
 environment:
-  sdk: ^3.11.4
+  sdk: ^3.13.5
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -28,14 +28,14 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  ffmpeg_kit_flutter_new_audio: ^2.5.2
+  ffmpeg_kit_flutter_new_audio: ^2.5.4
   flutter:
     sdk: flutter
-  installed_apps: ^2.1.1
+  installed_apps: ^2.2.0
   path: ^1.9.1
   path_provider: ^2.1.6
   share_handler: ^0.0.25
-  share_plus: ^13.3.0
+  share_plus: ^13.3.1
 
 
 dev_dependencies:

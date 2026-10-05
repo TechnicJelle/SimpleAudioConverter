@@ -11,7 +11,7 @@ class Path {
   final bool _sharedInto;
   final String filename;
 
-  Path({
+  new({
     required String uri,
     required bool sharedInto,
   }) : _uri = uri,
@@ -24,7 +24,7 @@ class Path {
 
   Future<String?> getUrl() async {
     if (_needsSafing) {
-      return FFmpegKitConfig.getSafParameterForRead(_uri);
+      return await FFmpegKitConfig.getSafParameterForRead(_uri);
     }
     return _uri;
   }

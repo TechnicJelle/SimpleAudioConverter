@@ -8,7 +8,7 @@ class PickedFileInfo {
   final Path path;
   final MediaInformation mediaInformation;
 
-  const PickedFileInfo({
+  const new({
     required this.path,
     required this.mediaInformation,
   });
