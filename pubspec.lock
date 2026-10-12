@@ -159,10 +159,10 @@ packages:
     dependency: "direct main"
     description:
       name: installed_apps
-      sha256: "81cbe85ac3161821a93feb7c273847e6bf09d2154b0ea1903871fd6d17dcc242"
+      sha256: "742e1e1aa7a7f4b2ce9cdba76499559415213736acba0d4a0eaa5e958dac65f7"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.0"
+    version: "2.2.1"
   jni:
     dependency: transitive
     description:
